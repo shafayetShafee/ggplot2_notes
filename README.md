@@ -2,7 +2,7 @@
 It's collection of tutorials regarding ggplot2 tips and trick from various sources (For future me)
 
 
-# Acknowledgement
+## Acknowledgement
 
 Resources from where I have compiled this note,
 
