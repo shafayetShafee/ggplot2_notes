@@ -7,6 +7,9 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE, error = TRUE)
 ```
 
+
+## Setup
+
 ```{r initials, message=FALSE}
 
 library(ggplot2)
@@ -186,5 +189,34 @@ We see that, top-left label Toyota Corolla is not showing, i.e. got cut by the p
 p + 
   scale_y_discrete(name = NULL, breaks = NULL, expand = c(0, 1)) +
   coord_cartesian(clip = "off") 
+```
+
+## Coordinates with `ratio`
+
+```{r}
+p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
+  geom_point(color = "sienna") +
+  labs(y = "random temp") +
+  xlim(c(0, 100)) + ylim(c(0, 150))
+
+p
+```
+
+Here we see that, per unit length of x axis is not same as that of y axis. NBut we can make it same by using `coord_fixed()` which is uses `ratio = 1` as the default value.
+
+
+> coord_fixed => A fixed scale coordinate system forces a specified ratio between the physical representation of data units on the axes. The ratio represents the number of units on the y-axis equivalent to one unit on the x-axis. The default, ratio = 1, ensures that one unit on the x-axis is the same length as one unit on the y-axis. Ratios higher than one make units on the y axis longer than units on the x-axis, and vice versa.
+
+```{r}
+p + coord_fixed()
+```
+
+```{r}
+p + coord_fixed(ratio = 1.5)
+```
+
+
+```{r}
+p + coord_fixed(ratio = 1/4)
 ```
 

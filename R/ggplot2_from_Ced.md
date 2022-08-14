@@ -1,6 +1,8 @@
 ggplot2 Notes
 ================
 
+## Setup
+
 ``` r
 library(ggplot2)
 
@@ -242,3 +244,54 @@ p +
 ```
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+## Coordinates with `ratio`
+
+``` r
+p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
+  geom_point(color = "sienna") +
+  labs(y = "random temp") +
+  xlim(c(0, 100)) + ylim(c(0, 150))
+
+p
+```
+
+    ## Warning: Removed 44 rows containing missing values (geom_point).
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+Here we see that, per unit length of x axis is not same as that of y
+axis. NBut we can make it same by using `coord_fixed()` which is uses
+`ratio = 1` as the default value.
+
+> coord_fixed =\> A fixed scale coordinate system forces a specified
+> ratio between the physical representation of data units on the axes.
+> The ratio represents the number of units on the y-axis equivalent to
+> one unit on the x-axis. The default, ratio = 1, ensures that one unit
+> on the x-axis is the same length as one unit on the y-axis. Ratios
+> higher than one make units on the y axis longer than units on the
+> x-axis, and vice versa.
+
+``` r
+p + coord_fixed()
+```
+
+    ## Warning: Removed 49 rows containing missing values (geom_point).
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+
+``` r
+p + coord_fixed(ratio = 1.5)
+```
+
+    ## Warning: Removed 61 rows containing missing values (geom_point).
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+``` r
+p + coord_fixed(ratio = 1/4)
+```
+
+    ## Warning: Removed 58 rows containing missing values (geom_point).
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
