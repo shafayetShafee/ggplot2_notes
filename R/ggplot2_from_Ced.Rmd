@@ -8,7 +8,10 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+
 ```
+
+> Disclaimer: This note is fundamentally a copied version of [this amazing tutorial by CÉDRIC SCHERER](https://cedricscherer.netlify.app/2019/08/05/a-ggplot2-tutorial-for-beautiful-plotting-in-r/), which I compiled while go through the blog post. So Almost all of the codes used here came from that blog post, with some additional text notes just for me. 
 
 
 ## Setup
@@ -309,5 +312,90 @@ ggplot(chic, aes(date, temp)) +
        title = "Daily Temperature in Farenheit",
        subtitle = "From 1997 to 2001") +
   theme_bw(base_size = 12, base_family = "rob con")
+```
+
+
+## Working with legends
+
+### Removing legends
+
+Three ways
+
+1. `theme(legend.position = "none")`
+2. `guides(color = "none")`
+3. `scale_color_discrete(guide = "none")`
+
+But there's a bit distinction between option 1 and option 2, 3. Option 1 will remove all of the legends in the plot at once, while option 2 or 3, will only remove the legend for a specific aesthetics (here for `color`)
+
+```{r}
+p <- ggplot(chic, 
+       aes(date, temp, color = season, shape = season)) +
+  geom_point()
+
+p
+
+p + theme(legend.position = "none")
+
+p + scale_color_discrete(guide = "none")
+
+p + guides(color = "none")
+
+p + guides(shape = "none")
+```
+
+### Removing legend titles
+
+Again there approach
+
+1. `theme(legend.title = element_blank())`
+2. `scale_color_discrete(name = NULL)`
+3. `labs(color = NULL)`
+
+```{r}
+p + theme(legend.title = element_blank())
+p + scale_color_discrete(name = NULL)
+p + labs(color = NULL)
+```
+
+Again we can see that option 1 removes all the legend titles, while option 2 and 3 only removes the color legend title but keeps for the shape (which in consequence separate the two legends.)
+
+## setting legends inside the plot
+
+To place the legend inside the plot panel, we can specify a vector with relative x and y in between 0 and 1 (**0 -> left or bottom and 1 -> top or right**) to `legend.position`
+
+```{r}
+p + labs(color = NULL, shape = NULL) + 
+  theme(
+    legend.position = c(0.15, 0.15),
+    legend.background = element_rect(fill = "transparent"),
+    legend.key = element_rect(fill = "gray")
+  )
+```
+
+One thing to notice, here we had to `NULL` both title of color and shape in `labs`, since this is an integrated legend. Other wise, they will get separated and create a mess.
+
+```{r}
+p + labs(color = NULL) + 
+  theme(
+    legend.position = c(0.15, 0.15),
+    legend.background = element_rect(fill = "transparent")
+  )
+```
+
+### Changing legend direction
+
+```{r}
+p +
+  theme(legend.position = "top") +
+  guides(
+    color = guide_legend(direction = "horizontal")
+  )
+
+p +
+  theme(legend.position = "top") +
+  guides(
+    color = guide_legend(direction = "horizontal"),
+    shape = guide_legend(direction = "vertical")
+  )
 ```
 

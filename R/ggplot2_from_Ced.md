@@ -32,6 +32,24 @@ ggplot2 Notes
 -   <a href="#fonts-with-r" id="toc-fonts-with-r">Fonts with R</a>
     -   <a href="#working-with-showtext" id="toc-working-with-showtext">working
         with <code>showtext</code></a>
+-   <a href="#working-with-legends" id="toc-working-with-legends">Working
+    with legends</a>
+    -   <a href="#removing-legends" id="toc-removing-legends">Removing
+        legends</a>
+    -   <a href="#removing-legend-titles"
+        id="toc-removing-legend-titles">Removing legend titles</a>
+-   <a href="#setting-legends-inside-the-plot"
+    id="toc-setting-legends-inside-the-plot">setting legends inside the
+    plot</a>
+    -   <a href="#changing-legend-direction"
+        id="toc-changing-legend-direction">Changing legend direction</a>
+
+> Disclaimer: This note is fundamentally a copied version of [this
+> amazing tutorial by CÉDRIC
+> SCHERER](https://cedricscherer.netlify.app/2019/08/05/a-ggplot2-tutorial-for-beautiful-plotting-in-r/),
+> which I compiled while go through the blog post. So Almost all of the
+> codes used here came from that blog post, with some additional text
+> notes just for me.
 
 ## Setup
 
@@ -288,7 +306,7 @@ p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
 p
 ```
 
-    ## Warning: Removed 52 rows containing missing values (geom_point).
+    ## Warning: Removed 55 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
@@ -308,7 +326,7 @@ axis. NBut we can make it same by using `coord_fixed()` which is uses
 p + coord_fixed()
 ```
 
-    ## Warning: Removed 44 rows containing missing values (geom_point).
+    ## Warning: Removed 48 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -324,7 +342,7 @@ p + coord_fixed(ratio = 1.5)
 p + coord_fixed(ratio = 1/4)
 ```
 
-    ## Warning: Removed 58 rows containing missing values (geom_point).
+    ## Warning: Removed 43 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
@@ -443,3 +461,135 @@ ggplot(chic, aes(date, temp)) +
 ```
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+
+## Working with legends
+
+### Removing legends
+
+Three ways
+
+1.  `theme(legend.position = "none")`
+2.  `guides(color = "none")`
+3.  `scale_color_discrete(guide = "none")`
+
+But there’s a bit distinction between option 1 and option 2, 3. Option 1
+will remove all of the legends in the plot at once, while option 2 or 3,
+will only remove the legend for a specific aesthetics (here for `color`)
+
+``` r
+p <- ggplot(chic, 
+       aes(date, temp, color = season, shape = season)) +
+  geom_point()
+
+p
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+
+``` r
+p + theme(legend.position = "none")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-25-2.png)<!-- -->
+
+``` r
+p + scale_color_discrete(guide = "none")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-25-3.png)<!-- -->
+
+``` r
+p + guides(color = "none")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-25-4.png)<!-- -->
+
+``` r
+p + guides(shape = "none")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-25-5.png)<!-- -->
+
+### Removing legend titles
+
+Again there approach
+
+1.  `theme(legend.title = element_blank())`
+2.  `scale_color_discrete(name = NULL)`
+3.  `labs(color = NULL)`
+
+``` r
+p + theme(legend.title = element_blank())
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+
+``` r
+p + scale_color_discrete(name = NULL)
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-26-2.png)<!-- -->
+
+``` r
+p + labs(color = NULL)
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-26-3.png)<!-- -->
+
+Again we can see that option 1 removes all the legend titles, while
+option 2 and 3 only removes the color legend title but keeps for the
+shape (which in consequence separate the two legends.)
+
+## setting legends inside the plot
+
+To place the legend inside the plot panel, we can specify a vector with
+relative x and y in between 0 and 1 (**0 -\> left or bottom and 1 -\>
+top or right**) to `legend.position`
+
+``` r
+p + labs(color = NULL, shape = NULL) + 
+  theme(
+    legend.position = c(0.15, 0.15),
+    legend.background = element_rect(fill = "transparent"),
+    legend.key = element_rect(fill = "gray")
+  )
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+
+One thing to notice, here we had to `NULL` both title of color and shape
+in `labs`, since this is an integrated legend. Other wise, they will get
+separated and create a mess.
+
+``` r
+p + labs(color = NULL) + 
+  theme(
+    legend.position = c(0.15, 0.15),
+    legend.background = element_rect(fill = "transparent")
+  )
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+
+### Changing legend direction
+
+``` r
+p +
+  theme(legend.position = "top") +
+  guides(
+    color = guide_legend(direction = "horizontal")
+  )
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+
+``` r
+p +
+  theme(legend.position = "top") +
+  guides(
+    color = guide_legend(direction = "horizontal"),
+    shape = guide_legend(direction = "vertical")
+  )
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-29-2.png)<!-- -->
