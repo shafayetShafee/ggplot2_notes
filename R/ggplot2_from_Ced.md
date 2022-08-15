@@ -1,6 +1,38 @@
 ggplot2 Notes
 ================
 
+-   <a href="#setup" id="toc-setup">Setup</a>
+-   <a href="#working-with-axes-titles-legends-and-themeing-etc"
+    id="toc-working-with-axes-titles-legends-and-themeing-etc">Working with
+    Axes, Titles, Legends and themeing etc.</a>
+    -   <a href="#paste-or-paste0-doesnt-work-as-intended-inside-the-expression"
+        id="toc-paste-or-paste0-doesnt-work-as-intended-inside-the-expression"><code>paste</code>
+        or <code>paste0</code> doesn’t work as intended inside the
+        <code>expression()</code></a>
+-   <a href="#vjust-moves-text-vertically-from-the-perspective-of-the-axes"
+    id="toc-vjust-moves-text-vertically-from-the-perspective-of-the-axes"><code>vjust</code>
+    moves text vertically from the perspective of the Axes</a>
+-   <a href="#changes-in-margint-r-b-l-are-from-our-perspective"
+    id="toc-changes-in-margint-r-b-l-are-from-our-perspective">Changes in
+    <code>margin(t, r, b, l)</code> are from our perspective.</a>
+-   <a href="#coord_cartesianylim--c0-50and-ylimc0-50-are-not-the-same"
+    id="toc-coord_cartesianylim--c0-50and-ylimc0-50-are-not-the-same"><code>coord_cartesian(ylim = c(0, 50))</code>and
+    <code>ylim(c(0, 50))</code> are not the same</a>
+-   <a href="#forcing-a-plot-to-start-at-origin"
+    id="toc-forcing-a-plot-to-start-at-origin">Forcing a plot to start at
+    origin</a>
+-   <a href="#coordinates-with-ratio"
+    id="toc-coordinates-with-ratio">Coordinates with <code>ratio</code></a>
+-   <a href="#using-function-to-alter-labels"
+    id="toc-using-function-to-alter-labels">Using function to alter
+    labels</a>
+-   <a href="#reminder-about-vjust-and-hjust"
+    id="toc-reminder-about-vjust-and-hjust">Reminder about
+    <code>vjust</code> and <code>hjust</code></a>
+-   <a href="#fonts-with-r" id="toc-fonts-with-r">Fonts with R</a>
+    -   <a href="#working-with-showtext" id="toc-working-with-showtext">working
+        with <code>showtext</code></a>
+
 ## Setup
 
 ``` r
@@ -256,7 +288,7 @@ p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
 p
 ```
 
-    ## Warning: Removed 57 rows containing missing values (geom_point).
+    ## Warning: Removed 52 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
@@ -276,7 +308,7 @@ axis. NBut we can make it same by using `coord_fixed()` which is uses
 p + coord_fixed()
 ```
 
-    ## Warning: Removed 45 rows containing missing values (geom_point).
+    ## Warning: Removed 44 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -284,7 +316,7 @@ p + coord_fixed()
 p + coord_fixed(ratio = 1.5)
 ```
 
-    ## Warning: Removed 47 rows containing missing values (geom_point).
+    ## Warning: Removed 48 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
@@ -292,7 +324,7 @@ p + coord_fixed(ratio = 1.5)
 p + coord_fixed(ratio = 1/4)
 ```
 
-    ## Warning: Removed 48 rows containing missing values (geom_point).
+    ## Warning: Removed 58 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 

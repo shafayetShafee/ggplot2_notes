@@ -1,6 +1,9 @@
 ---
 title: "ggplot2 Notes"
-output: github_document
+output:
+  github_document:
+    toc: true
+    toc_depth: 3 
 ---
 
 ```{r setup, include=FALSE}
