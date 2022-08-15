@@ -256,7 +256,7 @@ p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
 p
 ```
 
-    ## Warning: Removed 44 rows containing missing values (geom_point).
+    ## Warning: Removed 57 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
@@ -276,7 +276,7 @@ axis. NBut we can make it same by using `coord_fixed()` which is uses
 p + coord_fixed()
 ```
 
-    ## Warning: Removed 49 rows containing missing values (geom_point).
+    ## Warning: Removed 45 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -284,7 +284,7 @@ p + coord_fixed()
 p + coord_fixed(ratio = 1.5)
 ```
 
-    ## Warning: Removed 61 rows containing missing values (geom_point).
+    ## Warning: Removed 47 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
@@ -292,6 +292,122 @@ p + coord_fixed(ratio = 1.5)
 p + coord_fixed(ratio = 1/4)
 ```
 
-    ## Warning: Removed 58 rows containing missing values (geom_point).
+    ## Warning: Removed 48 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+
+## Using function to alter labels
+
+``` r
+p <- ggplot(chic, aes(x = date, y = temp)) +
+  geom_point(color = "firebrick") +
+  labs(x = "Year", y = NULL)
+
+p + scale_y_continuous(label = \(x) paste(x, "Degrees Farenheit"))
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+Also we can pass the `{rlang}` lambda function notation.
+
+``` r
+p + scale_y_continuous(label = ~ paste(.x, "Degrees Farenheit"))
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+
+## Reminder about `vjust` and `hjust`
+
+**Remember again**
+
+-   `hjust` means horizontal adjustment and 0 for left align and 1 for
+    right align
+-   `vjust` means vertical adjustment and 0 for top aligned and 1 for
+    bottom aligned.
+
+``` r
+p_demo <- function(vjust) {
+  p + ylab("Temp") +
+  ggtitle("Temperature of the area") + 
+  labs(
+    tag = paste("vjust", vjust)
+  ) +
+  theme(
+    plot.margin = margin(40, 40, 40, 40),
+    plot.title = element_text(vjust = vjust, hjust = 0.5, angle = 10),
+    axis.title.x = element_text(vjust = vjust, hjust = 0.5, angle = 10)
+  )
+}
+
+library(patchwork)
+
+p_demo(-2) + p_demo(-1)
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+
+``` r
+p_demo(0) + p_demo(1)
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-22-2.png)<!-- -->
+
+``` r
+p_demo(2) + p_demo(3)
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-22-3.png)<!-- -->
+
+## Fonts with R
+
+**TODO** Have to go through [this amazing blog post for using system
+fonts with
+R](https://yjunechoe.github.io/posts/2021-06-24-setting-up-and-debugging-custom-fonts/),
+which shows a better approach instead of using `{showtext}`
+
+### working with `showtext`
+
+``` r
+library(showtext)
+```
+
+    ## Loading required package: sysfonts
+
+    ## Loading required package: showtextdb
+
+``` r
+font_add_google("Playfair Display", ## name of google font
+                "playfair") ## name that will be used in R
+
+font_add_google("Bangers", "bangers")
+
+showtext_auto()
+ggplot(chic, aes(date, temp)) +
+  geom_point(color = "firebrick") +
+  labs(x = "Year", y = "Temperature", 
+       title = "Daily Temperature in Farenheit",
+       subtitle = "From 1997 to 2001") +
+  theme(
+    plot.title = element_text(family = "bangers", size = 25, hjust = 0.5),
+    plot.subtitle = element_text(family = "playfair", size = 15, hjust = 0.5)
+  )
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+
+And to implement fonts all over the plot that is, for all text element
+of the plot, we need to set the `base_family` equal to the google font
+
+``` r
+font_add_google("Roboto Condensed", "rob con")
+
+showtext_auto()
+ggplot(chic, aes(date, temp)) +
+  geom_point(color = "firebrick") +
+  labs(x = "Year", y = "Temperature", 
+       title = "Daily Temperature in Farenheit",
+       subtitle = "From 1997 to 2001") +
+  theme_bw(base_size = 12, base_family = "rob con")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
