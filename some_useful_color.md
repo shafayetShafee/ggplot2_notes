@@ -5,3 +5,4 @@
 - darkcyan
 - orangered
 - sienna
+- chocolate

@@ -38,11 +38,24 @@ ggplot2 Notes
         legends</a>
     -   <a href="#removing-legend-titles"
         id="toc-removing-legend-titles">Removing legend titles</a>
--   <a href="#setting-legends-inside-the-plot"
-    id="toc-setting-legends-inside-the-plot">setting legends inside the
-    plot</a>
+    -   <a href="#changing-legend-title" id="toc-changing-legend-title">changing
+        legend title</a>
+    -   <a href="#how-to-get-shared-legend"
+        id="toc-how-to-get-shared-legend">How to get shared legend</a>
+    -   <a href="#setting-legends-inside-the-plot"
+        id="toc-setting-legends-inside-the-plot">setting legends inside the
+        plot</a>
     -   <a href="#changing-legend-direction"
         id="toc-changing-legend-direction">Changing legend direction</a>
+    -   <a href="#changing-legend-key-labels"
+        id="toc-changing-legend-key-labels">Changing legend key labels</a>
+    -   <a href="#change-size-of-legend-symbols"
+        id="toc-change-size-of-legend-symbols">Change size of legend symbols</a>
+    -   <a
+        href="#how-to-show-legend-for-only-one-geom-when-legend-shows-for-multiple-geoms"
+        id="toc-how-to-show-legend-for-only-one-geom-when-legend-shows-for-multiple-geoms">How
+        to show legend for only one geom when legend shows for multiple
+        geoms</a>
 
 > Disclaimer: This note is fundamentally a copied version of [this
 > amazing tutorial by CÉDRIC
@@ -326,7 +339,7 @@ axis. NBut we can make it same by using `coord_fixed()` which is uses
 p + coord_fixed()
 ```
 
-    ## Warning: Removed 48 rows containing missing values (geom_point).
+    ## Warning: Removed 50 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -334,7 +347,7 @@ p + coord_fixed()
 p + coord_fixed(ratio = 1.5)
 ```
 
-    ## Warning: Removed 48 rows containing missing values (geom_point).
+    ## Warning: Removed 49 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
@@ -342,7 +355,7 @@ p + coord_fixed(ratio = 1.5)
 p + coord_fixed(ratio = 1/4)
 ```
 
-    ## Warning: Removed 43 rows containing missing values (geom_point).
+    ## Warning: Removed 66 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
@@ -471,44 +484,56 @@ Three ways
 1.  `theme(legend.position = "none")`
 2.  `guides(color = "none")`
 3.  `scale_color_discrete(guide = "none")`
+4.  using `show.legend=FALSE` in a specific geom.
 
 But there’s a bit distinction between option 1 and option 2, 3. Option 1
 will remove all of the legends in the plot at once, while option 2 or 3,
 will only remove the legend for a specific aesthetics (here for `color`)
 
 ``` r
-p <- ggplot(chic, 
+ggplot(chic, 
        aes(date, temp, color = season, shape = season)) +
   geom_point()
-
-p
 ```
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
 
 ``` r
-p + theme(legend.position = "none")
+ggplot(chic, 
+       aes(date, temp, color = season, shape = season)) +
+  geom_point(show.legend = FALSE) # option 4
 ```
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-25-2.png)<!-- -->
 
 ``` r
-p + scale_color_discrete(guide = "none")
+p <- ggplot(chic, 
+       aes(date, temp, color = season, shape = season)) +
+  geom_point()
+
+
+p + theme(legend.position = "none") # option 1
 ```
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-25-3.png)<!-- -->
 
 ``` r
-p + guides(color = "none")
+p + scale_color_discrete(guide = "none") # option 3
 ```
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-25-4.png)<!-- -->
 
 ``` r
-p + guides(shape = "none")
+p + guides(color = "none") # option 2
 ```
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-25-5.png)<!-- -->
+
+``` r
+p + guides(shape = "none") # option 2
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-25-6.png)<!-- -->
 
 ### Removing legend titles
 
@@ -540,7 +565,59 @@ Again we can see that option 1 removes all the legend titles, while
 option 2 and 3 only removes the color legend title but keeps for the
 shape (which in consequence separate the two legends.)
 
-## setting legends inside the plot
+### changing legend title
+
+There are three ways:
+
+-   `labs(color = "legend title name")`
+-   `scale_color_discrete(name = "legend title name")`
+-   `guides(color = guide_legend("legend title name"))`
+
+``` r
+p1 <- p + labs(color = "Season")
+p2 <- p + scale_color_discrete(name = "Season")
+p3 <- p + guides(color = guide_legend("Season"))
+
+
+library(patchwork)
+
+p1 + p2 + p3
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+Again, since there are two types of legend (`color` and `shape`) in the
+original plot `p` which were integrated into one legend by default, when
+changing one aesthetics (e.g. color legend), legend specifically, they
+get separated for each plots (`p1, p2, p3`). So to get integrated
+legends, we need change for color and `shape`.
+
+``` r
+p1 <- p + labs(color = "Season", shape = "Season")
+p2 <- p + scale_color_discrete(name = "Season") + 
+  scale_shape_discrete(name = "Season")
+
+g <- guide_legend("Season")
+
+p3 <- p + guides(color = g, shape = g)
+
+p1 + p2 + p3
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+
+### How to get shared legend
+
+An related topic which might be very useful know, which is how to get
+these three plot the same legend, since its more practical and
+reasonable thing to do. With `{patchwork}` its really easy to do.
+
+``` r
+p1 + p2 + p3 + plot_layout(guides = "collect")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+
+### setting legends inside the plot
 
 To place the legend inside the plot panel, we can specify a vector with
 relative x and y in between 0 and 1 (**0 -\> left or bottom and 1 -\>
@@ -555,7 +632,7 @@ p + labs(color = NULL, shape = NULL) +
   )
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
 
 One thing to notice, here we had to `NULL` both title of color and shape
 in `labs`, since this is an integrated legend. Other wise, they will get
@@ -569,7 +646,7 @@ p + labs(color = NULL) +
   )
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
 
 ### Changing legend direction
 
@@ -581,7 +658,7 @@ p +
   )
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
 
 ``` r
 p +
@@ -592,4 +669,99 @@ p +
   )
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-29-2.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-32-2.png)<!-- -->
+
+### Changing legend key labels
+
+We can do this by providing `labels` in the `scale_*` functions.
+
+``` r
+p +
+  scale_color_discrete(
+    name = "Season",
+    labels = c("Mar-May", "Jun-Aug", "Sep-Nov", "Dec-Feb")
+  )
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
+
+Again to get the integrated legends for `color` and `shape`,
+
+``` r
+legend_spec <- list(
+  name = "Season",
+  labels = c("Mar-May", "Jun-Aug", "Sep-Nov", "Dec-Feb")
+)
+
+p +
+  scale_color_discrete(name = legend_spec$name,
+                       labels = legend_spec$labels) +
+  scale_shape_discrete(name = legend_spec$name, 
+                       labels = legend_spec$labels)
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
+
+And a more hard way to do this,
+
+``` r
+library(rlang)
+
+
+scale_list <- lapply(
+  list(scale_color_discrete, scale_shape_discrete),
+  exec, !!!legend_spec
+)
+
+p + scale_list
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
+
+### Change size of legend symbols
+
+I have stumbled over this thing, many times. Now its the time finally to
+get it right. Again thanks to [this amazing blog
+post](https://cedricscherer.netlify.app/2019/08/05/a-ggplot2-tutorial-for-beautiful-plotting-in-r/).
+
+To do this, we need to use `override.aes` in `guide_legend` and specify
+what we want to overwrite
+
+``` r
+g <- guide_legend(override.aes = list(size = 4))
+
+p +
+  theme(
+    legend.title = element_text(size = 18)
+  ) +
+  guides(color = g)
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-36-1.png)<!-- -->
+
+**Note that, in this case, we didn’t had to change things for `shape`
+too.**
+
+### How to show legend for only one geom when legend shows for multiple geoms
+
+**Short answer:** use `show.legend = FALSE` for that specific geom in
+`geom_*`
+
+``` r
+ggplot(chic, aes(date, temp, color = season)) +
+  geom_point() +
+  geom_rug()
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-37-1.png)<!-- -->
+
+So we have a hybrid legend key now. So to get only the circle as legend
+key, we just need to shut off the legend for `geom_rug`
+
+``` r
+ggplot(chic, aes(date, temp, color = season)) +
+  geom_point() +
+  geom_rug(show.legend = FALSE)
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-38-1.png)<!-- -->
