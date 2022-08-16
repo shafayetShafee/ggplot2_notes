@@ -56,8 +56,14 @@ ggplot2 Notes
         id="toc-how-to-show-legend-for-only-one-geom-when-legend-shows-for-multiple-geoms">How
         to show legend for only one geom when legend shows for multiple
         geoms</a>
+    -   <a href="#manually-adding-legends-and-using-different-color"
+        id="toc-manually-adding-legends-and-using-different-color">Manually
+        adding legends and using different color</a>
+    -   <a href="#forcing-to-use-different-guide-styles-for-legend"
+        id="toc-forcing-to-use-different-guide-styles-for-legend">Forcing to use
+        different guide styles for legend</a>
 
-> Disclaimer: This note is fundamentally a copied version of [this
+> **DISCLAIMER**: This note is fundamentally a copied version of [this
 > amazing tutorial by CÉDRIC
 > SCHERER](https://cedricscherer.netlify.app/2019/08/05/a-ggplot2-tutorial-for-beautiful-plotting-in-r/),
 > which I compiled while go through the blog post. So Almost all of the
@@ -319,7 +325,7 @@ p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
 p
 ```
 
-    ## Warning: Removed 55 rows containing missing values (geom_point).
+    ## Warning: Removed 53 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
@@ -339,7 +345,7 @@ axis. NBut we can make it same by using `coord_fixed()` which is uses
 p + coord_fixed()
 ```
 
-    ## Warning: Removed 50 rows containing missing values (geom_point).
+    ## Warning: Removed 48 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -347,7 +353,7 @@ p + coord_fixed()
 p + coord_fixed(ratio = 1.5)
 ```
 
-    ## Warning: Removed 49 rows containing missing values (geom_point).
+    ## Warning: Removed 40 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
@@ -355,7 +361,7 @@ p + coord_fixed(ratio = 1.5)
 p + coord_fixed(ratio = 1/4)
 ```
 
-    ## Warning: Removed 66 rows containing missing values (geom_point).
+    ## Warning: Removed 50 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
@@ -765,3 +771,94 @@ ggplot(chic, aes(date, temp, color = season)) +
 ```
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-38-1.png)<!-- -->
+
+### Manually adding legends and using different color
+
+ggplot won’t add a legend automatically untill we map an aesthetics
+(e.g. `color`, `shape`) to a variable.
+
+The default plot is
+
+``` r
+ggplot(chic, aes(date, o3)) +
+  geom_line(color = "gray") +
+  geom_point(color = "darkorange2") +
+  theme_bw()
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-39-1.png)<!-- -->
+
+To get a legend for lines and points,
+
+``` r
+ggplot(chic, aes(date, o3)) +
+  geom_line(aes(color = "line")) +
+  geom_point(aes(color = "point")) +
+  theme_bw()
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-40-1.png)<!-- -->
+
+Now to map the color in legends properly and also to use line and point
+shaped marker in legends,
+
+``` r
+ggplot(chic, aes(date, o3)) +
+  geom_line(aes(color = "line")) +
+  geom_point(aes(color = "point")) +
+  scale_color_manual(
+    name = NULL,
+    guide = "legend",
+    values = c("point" = "darkorange2", "line" = "gray")
+  ) +
+  guides(
+    color = guide_legend(
+      override.aes = list(linetype = c(0, 1), shape = c(16, NA))
+    )
+  ) +
+  theme_bw()
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-41-1.png)<!-- -->
+
+**One thing to note**, in `scale_color_manual` we could specify
+`guide_legend` or `"legend"` to `guide` argument. As per documentation,
+(`?discrete_scale`)
+
+> **guide** =\> A function used to create a guide or its name. See
+> guides() for more information.
+
+### Forcing to use different guide styles for legend
+
+-   `guide_legend` is used for categorical variable
+-   `guide_colorbar` is used for continuous variable
+
+``` r
+p <- ggplot(chic, aes(date, temp, color = temp)) +
+  geom_point()
+
+p
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-42-1.png)<!-- -->
+
+But we can also force to use the different guides other than the default
+ones.
+
+``` r
+p + guides(color = guide_legend())
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-43-1.png)<!-- -->
+
+``` r
+p + guides(color = guide_bins())
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
+
+``` r
+p + guides(color = guide_colorsteps())
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-45-1.png)<!-- -->

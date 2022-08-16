@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE, error = TRUE)
 
 ```
 
-> Disclaimer: This note is fundamentally a copied version of [this amazing tutorial by CÉDRIC SCHERER](https://cedricscherer.netlify.app/2019/08/05/a-ggplot2-tutorial-for-beautiful-plotting-in-r/), which I compiled while go through the blog post. So Almost all of the codes used here came from that blog post, with some additional text notes just for me. 
+> **DISCLAIMER**: This note is fundamentally a copied version of [this amazing tutorial by CÉDRIC SCHERER](https://cedricscherer.netlify.app/2019/08/05/a-ggplot2-tutorial-for-beautiful-plotting-in-r/), which I compiled while go through the blog post. So Almost all of the codes used here came from that blog post, with some additional text notes just for me. 
 
 
 ## Setup
@@ -530,5 +530,79 @@ So we have a hybrid legend key now. So to get only the circle as legend key, we 
 ggplot(chic, aes(date, temp, color = season)) +
   geom_point() +
   geom_rug(show.legend = FALSE)
+```
+
+### Manually adding legends and using different color 
+
+ggplot won't add a legend automatically untill we map an aesthetics (e.g. `color`, `shape`) to a variable.
+
+The default plot is
+
+```{r}
+ggplot(chic, aes(date, o3)) +
+  geom_line(color = "gray") +
+  geom_point(color = "darkorange2") +
+  theme_bw()
+```
+
+To get a legend for lines and points,
+
+```{r}
+ggplot(chic, aes(date, o3)) +
+  geom_line(aes(color = "line")) +
+  geom_point(aes(color = "point")) +
+  theme_bw()
+```
+
+Now to map the color in legends properly and also to use line and point shaped marker in legends,
+
+```{r}
+ggplot(chic, aes(date, o3)) +
+  geom_line(aes(color = "line")) +
+  geom_point(aes(color = "point")) +
+  scale_color_manual(
+    name = NULL,
+    guide = "legend",
+    values = c("point" = "darkorange2", "line" = "gray")
+  ) +
+  guides(
+    color = guide_legend(
+      override.aes = list(linetype = c(0, 1), shape = c(16, NA))
+    )
+  ) +
+  theme_bw()
+```
+
+**One thing to note**, in `scale_color_manual` we could specify `guide_legend` or `"legend"` to `guide` argument. As per documentation, (`?discrete_scale`)
+
+> **guide**	=> 
+A function used to create a guide or its name. See guides() for more information.
+
+
+### Forcing to use different guide styles for legend
+
+- `guide_legend` is used for categorical variable
+- `guide_colorbar` is used for continuous variable
+
+```{r}
+p <- ggplot(chic, aes(date, temp, color = temp)) +
+  geom_point()
+
+p
+```
+
+But we can also force to use the different guides other than the default ones.
+
+
+```{r}
+p + guides(color = guide_legend())
+```
+
+```{r}
+p + guides(color = guide_bins())
+```
+
+```{r}
+p + guides(color = guide_colorsteps())
 ```
 

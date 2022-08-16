@@ -6,3 +6,4 @@
 - orangered
 - sienna
 - chocolate
+- darkorange2
