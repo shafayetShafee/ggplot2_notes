@@ -73,6 +73,8 @@ ggplot2 Notes
     -   <a href="#same-background-color-for-whole-plot"
         id="toc-same-background-color-for-whole-plot">Same background color for
         whole plot</a>
+-   <a href="#working-with-margins" id="toc-working-with-margins">Working
+    with Margins</a>
 
 > **DISCLAIMER**: This note is fundamentally a copied version of [this
 > amazing tutorial by CÉDRIC
@@ -336,7 +338,7 @@ p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
 p
 ```
 
-    ## Warning: Removed 58 rows containing missing values (geom_point).
+    ## Warning: Removed 47 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
@@ -356,7 +358,7 @@ axis. NBut we can make it same by using `coord_fixed()` which is uses
 p + coord_fixed()
 ```
 
-    ## Warning: Removed 47 rows containing missing values (geom_point).
+    ## Warning: Removed 54 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -364,7 +366,7 @@ p + coord_fixed()
 p + coord_fixed(ratio = 1.5)
 ```
 
-    ## Warning: Removed 46 rows containing missing values (geom_point).
+    ## Warning: Removed 56 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
@@ -372,7 +374,7 @@ p + coord_fixed(ratio = 1.5)
 p + coord_fixed(ratio = 1/4)
 ```
 
-    ## Warning: Removed 50 rows containing missing values (geom_point).
+    ## Warning: Removed 55 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
@@ -950,3 +952,12 @@ ggplot(chic, aes(x = date, y = temp)) +
 
 To achieve this, specify `fill` as `transparent` or `NA` of
 `panel.background` and add color for `fill` in `plot.background`.
+
+## Working with Margins
+
+Specifying `plot.margin` as
+
+-   `margin(t = 1, r = 3, b = 1, l = 8, unit = "cm")`
+-   `unit(c(1, 3, 1, 8), "cm")`
+
+has same effect on the margin.
