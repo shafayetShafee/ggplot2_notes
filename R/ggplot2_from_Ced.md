@@ -62,6 +62,17 @@ ggplot2 Notes
     -   <a href="#forcing-to-use-different-guide-styles-for-legend"
         id="toc-forcing-to-use-different-guide-styles-for-legend">Forcing to use
         different guide styles for legend</a>
+-   <a href="#working-with-background"
+    id="toc-working-with-background">Working with background</a>
+    -   <a href="#panelborder-is-on-top-of-panelbackground-layer"
+        id="toc-panelborder-is-on-top-of-panelbackground-layer"><code>panel.border</code>
+        is on top of <code>panel.background</code> layer.</a>
+    -   <a href="#changing-minor_breaks-of-the-plot"
+        id="toc-changing-minor_breaks-of-the-plot">Changing
+        <code>minor_breaks</code> of the plot</a>
+    -   <a href="#same-background-color-for-whole-plot"
+        id="toc-same-background-color-for-whole-plot">Same background color for
+        whole plot</a>
 
 > **DISCLAIMER**: This note is fundamentally a copied version of [this
 > amazing tutorial by CÉDRIC
@@ -325,7 +336,7 @@ p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
 p
 ```
 
-    ## Warning: Removed 53 rows containing missing values (geom_point).
+    ## Warning: Removed 58 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
@@ -345,7 +356,7 @@ axis. NBut we can make it same by using `coord_fixed()` which is uses
 p + coord_fixed()
 ```
 
-    ## Warning: Removed 48 rows containing missing values (geom_point).
+    ## Warning: Removed 47 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -353,7 +364,7 @@ p + coord_fixed()
 p + coord_fixed(ratio = 1.5)
 ```
 
-    ## Warning: Removed 40 rows containing missing values (geom_point).
+    ## Warning: Removed 46 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
@@ -862,3 +873,80 @@ p + guides(color = guide_colorsteps())
 ```
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-45-1.png)<!-- -->
+
+## Working with background
+
+First, we need to take note on the fact that, there are
+section/component of the ggplot2 plotting area, namely
+
+-   **`panel`:** the area where the data is plotted
+-   **`plot`:** the area which contains the panel, axis text,
+    axis-title, legends, plot-title, subtitle, caption etc.
+
+### `panel.border` is on top of `panel.background` layer.
+
+``` r
+ggplot(chic, aes(x = date, y = temp)) +
+  geom_point(size = 2) +
+  labs(x = "Year", y = "Temperature (°F)") +
+  theme(panel.background = element_rect(
+    fill = "#64D2AA", color = "#64D2AA")
+  )
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-46-1.png)<!-- --> We
+can see that, the outlines of the panel did not changed, it remained as
+is. Because there’s an another layer on top of `panel.background`, which
+is `panel.border`.
+
+``` r
+ggplot(chic, aes(x = date, y = temp)) +
+  geom_point(size = 2) +
+  labs(x = "Year", y = "Temperature (°F)") +
+  theme(
+    panel.border = element_rect(
+    fill = "#64D2AA99", color = "#64D2AA", size = 2),
+    panel.grid = element_line(color = "black")
+  )
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-47-1.png)<!-- -->
+
+Now its clear that `panel.border` is on top of the whole **panel**,
+since its obscuring the points, grid-lines.
+
+That’s why we have to make sure that we give `transparent` fill in
+`element_rect` of `panel.border`.
+
+``` r
+ggplot(chic, aes(x = date, y = temp)) +
+  geom_point(size = 2) +
+  labs(x = "Year", y = "Temperature (°F)") +
+  theme(
+    panel.background = element_rect(
+    fill = "#64D2AA", color = "#64D2AA"),
+    panel.border = element_rect(
+    fill = "transparent", color = "#64D2AA", size = 2),
+    panel.grid = element_line(color = "black")
+  )
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-48-1.png)<!-- -->
+
+### Changing `minor_breaks` of the plot
+
+``` r
+ggplot(chic, aes(x = date, y = temp)) +
+  geom_point(color = "firebrick") +
+  scale_y_continuous(
+    breaks = seq(0, 100, 10),
+    minor_breaks = seq(0, 100, 2.5)
+  )
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-49-1.png)<!-- -->
+
+### Same background color for whole plot
+
+To achieve this, specify `fill` as `transparent` or `NA` of
+`panel.background` and add color for `fill` in `plot.background`.
