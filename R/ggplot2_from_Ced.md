@@ -59,6 +59,8 @@ ggplot2 Notes
     -   <a href="#manually-adding-legends-and-using-different-color"
         id="toc-manually-adding-legends-and-using-different-color">Manually
         adding legends and using different color</a>
+    -   <a href="#changing-legend-order" id="toc-changing-legend-order">Changing
+        legend order</a>
     -   <a href="#forcing-to-use-different-guide-styles-for-legend"
         id="toc-forcing-to-use-different-guide-styles-for-legend">Forcing to use
         different guide styles for legend</a>
@@ -338,7 +340,7 @@ p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
 p
 ```
 
-    ## Warning: Removed 47 rows containing missing values (geom_point).
+    ## Warning: Removed 63 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
@@ -358,7 +360,7 @@ axis. NBut we can make it same by using `coord_fixed()` which is uses
 p + coord_fixed()
 ```
 
-    ## Warning: Removed 54 rows containing missing values (geom_point).
+    ## Warning: Removed 50 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -366,7 +368,7 @@ p + coord_fixed()
 p + coord_fixed(ratio = 1.5)
 ```
 
-    ## Warning: Removed 56 rows containing missing values (geom_point).
+    ## Warning: Removed 60 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
@@ -374,7 +376,7 @@ p + coord_fixed(ratio = 1.5)
 p + coord_fixed(ratio = 1/4)
 ```
 
-    ## Warning: Removed 55 rows containing missing values (geom_point).
+    ## Warning: Removed 54 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
@@ -698,7 +700,7 @@ We can do this by providing `labels` in the `scale_*` functions.
 p +
   scale_color_discrete(
     name = "Season",
-    labels = c("Mar-May", "Jun-Aug", "Sep-Nov", "Dec-Feb")
+    labels = c("Jun-Aug", "Mar-May", "Sep-Nov", "Dec-Feb")
   )
 ```
 
@@ -709,7 +711,10 @@ Again to get the integrated legends for `color` and `shape`,
 ``` r
 legend_spec <- list(
   name = "Season",
-  labels = c("Mar-May", "Jun-Aug", "Sep-Nov", "Dec-Feb")
+  labels = c("Spring" = "Mar-May", 
+             "Summer" = "Jun-Aug", 
+             "Autumn" = "Sep-Nov", 
+             "Winter" = "Dec-Feb")
 )
 
 p +
@@ -841,6 +846,120 @@ ggplot(chic, aes(date, o3)) +
 > **guide** =\> A function used to create a guide or its name. See
 > guides() for more information.
 
+### Changing legend order
+
+#### Option 1 (Easier)
+
+``` r
+ggplot(chic, aes(date, temp, color = season)) +
+  geom_point() +
+  scale_x_date(date_labels = "%b-%y")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-42-1.png)<!-- --> To
+change the legend order in something like (Summer =\> Autumn =\> Winter
+=\> Spring), we can use `scale_color_discrete` (since we have used
+`color = season`)
+
+``` r
+ggplot(chic, aes(date, temp, color = season)) +
+  geom_point() +
+  scale_color_discrete(
+    breaks = c("Summer", "Autumn", "Winter", "Spring")
+  )
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-43-1.png)<!-- -->
+
+Or to align with the order of the plot, (Winter, Spring, Summer, Autumn)
+and also add custom legend key label,
+
+``` r
+ggplot(chic, aes(date, temp, color = season)) +
+  geom_point() +
+  scale_color_discrete(
+    breaks = c("Winter", "Spring", "Summer", "Autumn"),
+    labels = c("Spring" = "Mar-May", 
+             "Summer" = "Jun-Aug", 
+             "Autumn" = "Sep-Nov", 
+             "Winter" = "Dec-Feb")
+  )
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
+
+or without the `=` mapping in `labels` (Here we have to make sure the
+order in both `breaks` and `labels` are aligned).
+
+``` r
+ggplot(chic, aes(date, temp, color = season)) +
+  geom_point() +
+  scale_color_discrete(
+    breaks = c("Winter", "Spring", "Summer", "Autumn"),
+    labels = c("Dec-Feb", "Mar-May", "Jun-Aug", "Sep-Nov")
+  )
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-45-1.png)<!-- -->
+
+But to add custom color, we need to use `scale_color_manual`,
+
+``` r
+ggplot(chic, aes(date, temp, color = season)) +
+  geom_point() +
+  scale_color_manual(
+    breaks = c("Winter", "Spring", "Summer", "Autumn"),
+    labels = c("Dec-Feb", "Mar-May", "Jun-Aug", "Sep-Nov"),
+    values = c("firebrick", "dodgerblue", "darkcyan", "orangered")
+  )
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-46-1.png)<!-- -->
+
+#### Option 2
+
+``` r
+library(dplyr, quietly = TRUE)
+```
+
+    ## 
+    ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
+
+``` r
+p <- chic %>% 
+  mutate(
+    season = forcats::fct_relevel(factor(season), c("Winter", "Spring", "Summer", "Autumn"))
+  ) %>% 
+  ggplot(aes(date, temp, color = season)) +
+  geom_point()
+  
+p
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-47-1.png)<!-- -->
+
+Note that, color encoding got changed here. To add custom color, legend
+key labels in this case,
+
+``` r
+p +
+  scale_color_manual(
+    labels = c("Dec-Feb", "Mar-May", "Jun-Aug", "Sep-Nov"),
+    values = c("dodgerblue", "orangered", "darkcyan", "firebrick")
+  ) +
+  scale_x_date(date_labels = "%b-%y")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-48-1.png)<!-- -->
+
 ### Forcing to use different guide styles for legend
 
 -   `guide_legend` is used for categorical variable
@@ -853,7 +972,7 @@ p <- ggplot(chic, aes(date, temp, color = temp)) +
 p
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-42-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-49-1.png)<!-- -->
 
 But we can also force to use the different guides other than the default
 ones.
@@ -862,19 +981,19 @@ ones.
 p + guides(color = guide_legend())
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-43-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-50-1.png)<!-- -->
 
 ``` r
 p + guides(color = guide_bins())
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-51-1.png)<!-- -->
 
 ``` r
 p + guides(color = guide_colorsteps())
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-45-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-52-1.png)<!-- -->
 
 ## Working with background
 
@@ -896,7 +1015,7 @@ ggplot(chic, aes(x = date, y = temp)) +
   )
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-46-1.png)<!-- --> We
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-53-1.png)<!-- --> We
 can see that, the outlines of the panel did not changed, it remained as
 is. Because there’s an another layer on top of `panel.background`, which
 is `panel.border`.
@@ -912,7 +1031,7 @@ ggplot(chic, aes(x = date, y = temp)) +
   )
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-47-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-54-1.png)<!-- -->
 
 Now its clear that `panel.border` is on top of the whole **panel**,
 since its obscuring the points, grid-lines.
@@ -933,7 +1052,7 @@ ggplot(chic, aes(x = date, y = temp)) +
   )
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-48-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-55-1.png)<!-- -->
 
 ### Changing `minor_breaks` of the plot
 
@@ -946,7 +1065,7 @@ ggplot(chic, aes(x = date, y = temp)) +
   )
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-49-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-56-1.png)<!-- -->
 
 ### Same background color for whole plot
 

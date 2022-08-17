@@ -460,7 +460,7 @@ We can do this by providing `labels` in the `scale_*` functions.
 p +
   scale_color_discrete(
     name = "Season",
-    labels = c("Mar-May", "Jun-Aug", "Sep-Nov", "Dec-Feb")
+    labels = c("Jun-Aug", "Mar-May", "Sep-Nov", "Dec-Feb")
   )
 ```
 
@@ -469,7 +469,10 @@ Again to get the integrated legends for `color` and `shape`,
 ```{r}
 legend_spec <- list(
   name = "Season",
-  labels = c("Mar-May", "Jun-Aug", "Sep-Nov", "Dec-Feb")
+  labels = c("Spring" = "Mar-May", 
+             "Summer" = "Jun-Aug", 
+             "Autumn" = "Sep-Nov", 
+             "Winter" = "Dec-Feb")
 )
 
 p +
@@ -578,6 +581,90 @@ ggplot(chic, aes(date, o3)) +
 > **guide**	=> 
 A function used to create a guide or its name. See guides() for more information.
 
+
+### Changing legend order
+
+#### Option 1 (Easier)
+
+```{r}
+ggplot(chic, aes(date, temp, color = season)) +
+  geom_point() +
+  scale_x_date(date_labels = "%b-%y")
+```
+To change the legend order in something like (Summer => Autumn => Winter => Spring), we can use `scale_color_discrete` (since we have used `color = season`)
+
+
+```{r}
+ggplot(chic, aes(date, temp, color = season)) +
+  geom_point() +
+  scale_color_discrete(
+    breaks = c("Summer", "Autumn", "Winter", "Spring")
+  )
+
+```
+
+Or to align with the order of the plot, (Winter, Spring, Summer, Autumn) and also add custom legend key label,
+
+```{r}
+ggplot(chic, aes(date, temp, color = season)) +
+  geom_point() +
+  scale_color_discrete(
+    breaks = c("Winter", "Spring", "Summer", "Autumn"),
+    labels = c("Spring" = "Mar-May", 
+             "Summer" = "Jun-Aug", 
+             "Autumn" = "Sep-Nov", 
+             "Winter" = "Dec-Feb")
+  )
+```
+
+or without the `=` mapping in `labels` (Here we have to make sure the order in both `breaks` and `labels` are aligned).
+
+```{r}
+ggplot(chic, aes(date, temp, color = season)) +
+  geom_point() +
+  scale_color_discrete(
+    breaks = c("Winter", "Spring", "Summer", "Autumn"),
+    labels = c("Dec-Feb", "Mar-May", "Jun-Aug", "Sep-Nov")
+  )
+```
+
+But to add custom color, we need to use `scale_color_manual`,
+
+```{r}
+ggplot(chic, aes(date, temp, color = season)) +
+  geom_point() +
+  scale_color_manual(
+    breaks = c("Winter", "Spring", "Summer", "Autumn"),
+    labels = c("Dec-Feb", "Mar-May", "Jun-Aug", "Sep-Nov"),
+    values = c("firebrick", "dodgerblue", "darkcyan", "orangered")
+  )
+```
+
+#### Option 2
+
+```{r}
+library(dplyr, quietly = TRUE)
+
+p <- chic %>% 
+  mutate(
+    season = forcats::fct_relevel(factor(season), c("Winter", "Spring", "Summer", "Autumn"))
+  ) %>% 
+  ggplot(aes(date, temp, color = season)) +
+  geom_point()
+  
+p
+```
+
+Note that, color encoding got changed here. To add custom color, legend key labels in this case,
+
+```{r}
+p +
+  scale_color_manual(
+    labels = c("Dec-Feb", "Mar-May", "Jun-Aug", "Sep-Nov"),
+    values = c("dodgerblue", "orangered", "darkcyan", "firebrick")
+  ) +
+  scale_x_date(date_labels = "%b-%y")
+```
 
 ### Forcing to use different guide styles for legend
 
