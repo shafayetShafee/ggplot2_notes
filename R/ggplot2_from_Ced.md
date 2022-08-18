@@ -94,6 +94,8 @@ ggplot2 Notes
     -   <a href="#arranging-different-plots-together"
         id="toc-arranging-different-plots-together">Arranging different plots
         together</a>
+-   <a href="#working-with-color" id="toc-working-with-color">Working with
+    color</a>
 
 > **DISCLAIMER**: This note is fundamentally a copied version of [this
 > amazing tutorial by CÉDRIC
@@ -357,7 +359,7 @@ p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
 p
 ```
 
-    ## Warning: Removed 48 rows containing missing values (geom_point).
+    ## Warning: Removed 49 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
@@ -377,7 +379,7 @@ axis. NBut we can make it same by using `coord_fixed()` which is uses
 p + coord_fixed()
 ```
 
-    ## Warning: Removed 41 rows containing missing values (geom_point).
+    ## Warning: Removed 54 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -385,7 +387,7 @@ p + coord_fixed()
 p + coord_fixed(ratio = 1.5)
 ```
 
-    ## Warning: Removed 64 rows containing missing values (geom_point).
+    ## Warning: Removed 45 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
@@ -393,7 +395,7 @@ p + coord_fixed(ratio = 1.5)
 p + coord_fixed(ratio = 1/4)
 ```
 
-    ## Warning: Removed 58 rows containing missing values (geom_point).
+    ## Warning: Removed 48 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
@@ -1364,3 +1366,25 @@ preference)
 -   `{patchword}`
 -   `{cowplot}`
 -   `{gridExtra}`
+
+As usual, need to refer to package docs while working with them.
+
+## Working with color
+
+The very first thing, we need to remember is this
+
+-   `color` =\> Specify the outline color of an element
+-   `fill` =\> Specify the filling color of an element
+
+A quick example would be,
+
+``` r
+ggplot(chic) +
+  aes(
+    date, temp
+  ) +
+  geom_point(shape = 21, size = 2, stroke = 1, 
+             color = "darkorange2", fill = "dodgerblue")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-66-1.png)<!-- -->

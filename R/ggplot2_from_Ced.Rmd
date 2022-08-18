@@ -1009,4 +1009,21 @@ There are three good packages to do this so far (ordered to my preference)
 
 As usual, need to refer to package docs while working with them.
 
+## Working with color
+
+The very first thing, we need to remember is this
+
+- `color` => Specify the outline color of an element
+- `fill` => Specify the filling color of an element
+
+A quick example would be,
+
+```{r}
+ggplot(chic) +
+  aes(
+    date, temp
+  ) +
+  geom_point(shape = 21, size = 2, stroke = 1, 
+             color = "darkorange2", fill = "dodgerblue")
+```
 
