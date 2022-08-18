@@ -1,4 +1,4 @@
-# ggplot2_notes
+# Ggplot2 Notes
 
 It's collection of tutorials regarding ggplot2 tips and trick from various sources (For future me)
 
