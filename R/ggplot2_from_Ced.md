@@ -87,6 +87,13 @@ ggplot2 Notes
         id="toc-difference-in-behavior-of-the-scales-argument-in-facet_grid-and-facet_wrap">Difference
         in Behavior of the scales argument in <code>facet_grid</code> and
         <code>facet_wrap</code></a>
+    -   <a href="#modify-style-of-strip-texts"
+        id="toc-modify-style-of-strip-texts">Modify Style of Strip Texts</a>
+    -   <a href="#styling-a-specific-facet"
+        id="toc-styling-a-specific-facet">Styling a specific facet</a>
+    -   <a href="#arranging-different-plots-together"
+        id="toc-arranging-different-plots-together">Arranging different plots
+        together</a>
 
 > **DISCLAIMER**: This note is fundamentally a copied version of [this
 > amazing tutorial by CÉDRIC
@@ -350,7 +357,7 @@ p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
 p
 ```
 
-    ## Warning: Removed 45 rows containing missing values (geom_point).
+    ## Warning: Removed 48 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
@@ -370,7 +377,7 @@ axis. NBut we can make it same by using `coord_fixed()` which is uses
 p + coord_fixed()
 ```
 
-    ## Warning: Removed 53 rows containing missing values (geom_point).
+    ## Warning: Removed 41 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -378,7 +385,7 @@ p + coord_fixed()
 p + coord_fixed(ratio = 1.5)
 ```
 
-    ## Warning: Removed 41 rows containing missing values (geom_point).
+    ## Warning: Removed 64 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
@@ -386,7 +393,7 @@ p + coord_fixed(ratio = 1.5)
 p + coord_fixed(ratio = 1/4)
 ```
 
-    ## Warning: Removed 50 rows containing missing values (geom_point).
+    ## Warning: Removed 58 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
@@ -1147,3 +1154,213 @@ p + facet_wrap(year ~ season, nrow = 4, scales = "free")
 
 **But, in `facet_wrap` scales are truly free for each faceted plot. Also
 `facet_wrap` allows for using two variables.**
+
+### Modify Style of Strip Texts
+
+We can highlight specific labels of the facet strip by creating a
+function that is based on `{ggtext}` (credit goes to Claus Wilke, author
+of `ggtext` and Cedric, author of the tutorial which I am following now)
+
+``` r
+library(ggtext)
+library(rlang)
+
+element_textbox_highlight <- function(..., hi.labels = NULL, hi.fill = NULL, 
+                                   hi.col = NULL, hi.box.col = NULL, 
+                                   hi.family = NULL) {
+  structure(
+    c(element_textbox(...),
+      list(hi.labels = hi.labels, hi.fill = hi.fill, hi.col = hi.col, 
+           hi.box.col = hi.box.col, hi.family = hi.family)
+    ),
+    class = c("element_textbox_highlight", "element_textbox", "element_text",
+              "element")
+  )
+}
+
+
+element_grob.element_textbox_highlight <- function(element, label = "", ...) {
+  if (label %in% element$hi.labels) {
+    element$fill <- element$hi.fill %||% element$fill
+    element$colour <- element$hi.col %||% element$colour
+    element$box.colour <- element$hi.box.col %||% element$box.colour
+    element$family <- element$hi.family %||% element$family
+  }
+  NextMethod()
+}
+```
+
+Well, I don’t have a good understanding of OOP in R, not yet. But so
+far, what I understand from the above code is that, we are first
+creating the function (constructor) for creating objects of class
+`element_textbox_highlight`, which also inherits from classes
+`"element_textbox", "element_text", "element"` and then we define a
+`element_grob` method for this `element_textbox_highlight` object.
+
+``` r
+p + facet_wrap(year ~ season, nrow = 4, scales = "free_x") +
+  theme(
+    strip.background = element_blank(),
+    strip.text = element_textbox_highlight(
+      size = 12, face = "bold", fill = "white", box.color = "chartreuse4", 
+      color = "chartreuse4", halign = 0.5, linetype = 1, r = unit(5, "pt"),
+      width = unit(1, "npc"), padding = margin(5, 0, 3, 0), 
+      margin = margin(0, 1, 3, 1), 
+      hi.labels = paste(seq(1997,2000)),
+      hi.fill = "chartreuse4", hi.box.col = "black", hi.col = "white"
+    )
+  )
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-62-1.png)<!-- -->
+
+### Styling a specific facet
+
+``` r
+ggplot(chic, aes(date, temp)) +
+  geom_point(aes(color = season == "Summer"), alpha = 0.3,
+             show.legend = FALSE) +
+  labs(x = "Year", y = "Temperature (F)") +
+  facet_wrap(~season, nrow = 1) +
+  scale_color_manual(
+    values = c("gray40", "firebrick")
+  ) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+    strip.background = element_blank(),
+    strip.text = element_textbox_highlight(
+      size = 12, face = "bold", 
+      fill = "white", box.color = "white", color = "gray40",
+      halign = 0.5, linetype = 1, r = unit(0, "pt"), width = unit(1, "npc"),
+      padding = margin(2, 0, 1, 0), margin = margin(0, 1, 3, 1), 
+      hi.labels = "Summer", hi.fill = "firebrick", hi.col = "white"
+    )
+  )
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-63-1.png)<!-- -->
+
+Adding exmaples like the ones above from
+[SO](https://stackoverflow.com/questions/60332202/conditionally-fill-ggtext-text-boxes-in-facet-wrap)
+(Actually this whole amazing specific facet modification idea and code
+originated from this StackOverflow QA)
+
+``` r
+library(cowplot)
+```
+
+    ## 
+    ## Attaching package: 'cowplot'
+
+    ## The following object is masked from 'package:patchwork':
+    ## 
+    ##     align_plots
+
+``` r
+ggplot(mpg, aes(cty, hwy)) + 
+  geom_point() +
+  facet_wrap(~class) +
+  theme_half_open(12) +
+  background_grid() +
+  theme(
+    strip.background = element_blank(),
+    strip.text = element_textbox_highlight(
+      size = 12,
+      color = "white", fill = "#5D729D", box.color = "#4A618C",
+      halign = 0.5, linetype = 1, r = unit(5, "pt"), width = unit(1, "npc"),
+      padding = margin(2, 0, 1, 0), margin = margin(3, 3, 3, 3),
+      # this is new relative to element_textbox():--------------------
+      hi.labels = c("minivan", "suv"),
+      hi.fill = "#F89096", hi.box.col = "#A6424A", hi.col = "black"
+      # --------------------------------------------------------------
+    )
+  )
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-64-1.png)<!-- -->
+
+And for expanding this idea to two or more differnt type of styling,
+
+``` r
+library(ggplot2)
+library(cowplot)
+library(rlang)
+library(ggtext)
+
+
+element_textbox_highlight <- function(..., 
+                                      hi.labels = NULL, hi.fill = NULL,
+                                      hi.col = NULL, hi.box.col = NULL,
+                                      hi.labels2 = NULL, hi.fill2 = NULL,
+                                      hi.col2 = NULL, hi.box.col2 = NULL) {
+  structure(
+    c(element_textbox(...),
+      list(
+        # params for 1st style -------------------------------------------
+        hi.labels = hi.labels, hi.fill = hi.fill, hi.col = hi.col, 
+        hi.box.col = hi.box.col,
+        # params for 2nd type style --------------------------------------
+        hi.labels2 = hi.labels2, hi.fill2 = hi.fill2, hi.col2 = hi.col2,
+        hi.box.col2 = hi.box.col2
+        )
+    ),
+    
+    class = c("element_textbox_highlight", "element_textbox", 
+              "element_text", "element")
+  )
+}
+
+
+element_grob.element_textbox_highlight <- function(element, label = "", ...) {
+  # for 1st style ------------------------------------------------------
+  if (label %in% element$hi.labels) {
+    element$fill <- element$hi.fill %||% element$fill
+    element$colour <- element$hi.col %||% element$colour
+    element$box.colour <- element$hi.box.col %||% element$box.colour
+  }
+  
+  # for 2nd style ------------------------------------------------------
+  if (label %in% element$hi.labels2) {
+    element$fill <- element$hi.fill2 %||% element$fill
+    element$colour <- element$hi.col2 %||% element$colour
+    element$box.colour <- element$hi.box.col2 %||% element$box.colour
+  }
+  NextMethod()
+}
+
+
+ggplot(mpg, aes(cty, hwy)) + 
+  geom_point() +
+  facet_wrap(~class) +
+  theme_half_open(12) +
+  background_grid() +
+  theme(
+    strip.background = element_blank(),
+    strip.text = element_textbox_highlight(
+      size = 12,
+      # for generally all facets
+      color = "white", fill = "#5D729D", box.color = "#4A618C",
+      halign = 0.5, linetype = 1, r = unit(5, "pt"), width = unit(1, "npc"),
+      padding = margin(2, 0, 1, 0), margin = margin(3, 3, 3, 3),
+      # this is new relative to element_textbox(): ---------------------
+      # first style ----------------------------------------------------
+      hi.labels = c("minivan", "suv"),
+      hi.fill = "#F89096", hi.box.col = "#A6424A", hi.col = "black",
+      # second style ---------------------------------------------------
+      hi.labels2 = c("compact", "pickup"),
+      hi.fill2 = "green", hi.box.col2 = "#A6424A", hi.col2 = "black"
+    )
+  )
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-65-1.png)<!-- -->
+
+### Arranging different plots together
+
+There are three good packages to do this so far (ordered to my
+preference)
+
+-   `{patchword}`
+-   `{cowplot}`
+-   `{gridExtra}`

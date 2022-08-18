@@ -4,7 +4,7 @@ It's collection of tutorials regarding ggplot2 tips and trick from various sourc
 
 -   [Notes from **A GGPLOT2 TUTORIAL FOR BEAUTIFUL PLOTTING IN R**](R/ggplot2_from_Ced.md)
 
-- [list of Some useful colors from base-R](some_useful_color.md)
+- [List of Some useful colors from base-R](some_useful_color.md)
 
 ## Acknowledgement
 
