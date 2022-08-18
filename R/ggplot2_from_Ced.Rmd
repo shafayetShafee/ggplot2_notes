@@ -581,6 +581,27 @@ ggplot(chic, aes(date, o3)) +
 > **guide**	=> 
 A function used to create a guide or its name. See guides() for more information.
 
+### Changing the legend order of this manually added legend
+
+Simply change the order to the call to `geom_line` and `geom_point` and also the order of the values.
+
+```{r}
+ggplot(chic, aes(date, temp)) +
+  geom_line(aes(color = "line")) +
+  geom_point(aes(color = "point")) +
+  scale_color_manual(
+    name = NULL,
+    guide = guide_legend(),
+    values = c("line" = "gray", "point" = "darkorange2")
+  ) +
+ guides(
+    color = guide_legend(
+      override.aes = list(linetype = c(1, 0), shape = c(NA, 16))
+    )
+  ) +
+  theme_bw()
+```
+
 
 ### Changing legend order
 
@@ -591,6 +612,7 @@ ggplot(chic, aes(date, temp, color = season)) +
   geom_point() +
   scale_x_date(date_labels = "%b-%y")
 ```
+
 To change the legend order in something like (Summer => Autumn => Winter => Spring), we can use `scale_color_discrete` (since we have used `color = season`)
 
 
@@ -711,6 +733,7 @@ ggplot(chic, aes(x = date, y = temp)) +
     fill = "#64D2AA", color = "#64D2AA")
   )
 ```
+
 We can see that, the outlines of the panel did not changed, it remained as is. Because there's an another layer on top of `panel.background`, which is `panel.border`.
 
 
@@ -766,3 +789,8 @@ Specifying `plot.margin` as
 - `unit(c(1, 3, 1, 8), "cm")`
 
 has same effect on the margin.
+
+
+## Working with facets
+
+

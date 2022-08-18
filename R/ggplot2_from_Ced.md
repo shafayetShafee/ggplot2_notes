@@ -59,6 +59,9 @@ ggplot2 Notes
     -   <a href="#manually-adding-legends-and-using-different-color"
         id="toc-manually-adding-legends-and-using-different-color">Manually
         adding legends and using different color</a>
+    -   <a href="#changing-the-legend-order-of-this-manually-added-legend"
+        id="toc-changing-the-legend-order-of-this-manually-added-legend">Changing
+        the legend order of this manually added legend</a>
     -   <a href="#changing-legend-order" id="toc-changing-legend-order">Changing
         legend order</a>
     -   <a href="#forcing-to-use-different-guide-styles-for-legend"
@@ -77,6 +80,8 @@ ggplot2 Notes
         whole plot</a>
 -   <a href="#working-with-margins" id="toc-working-with-margins">Working
     with Margins</a>
+-   <a href="#working-with-facets" id="toc-working-with-facets">Working with
+    facets</a>
 
 > **DISCLAIMER**: This note is fundamentally a copied version of [this
 > amazing tutorial by CÉDRIC
@@ -340,7 +345,7 @@ p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
 p
 ```
 
-    ## Warning: Removed 63 rows containing missing values (geom_point).
+    ## Warning: Removed 38 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
@@ -360,7 +365,7 @@ axis. NBut we can make it same by using `coord_fixed()` which is uses
 p + coord_fixed()
 ```
 
-    ## Warning: Removed 50 rows containing missing values (geom_point).
+    ## Warning: Removed 45 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -368,7 +373,7 @@ p + coord_fixed()
 p + coord_fixed(ratio = 1.5)
 ```
 
-    ## Warning: Removed 60 rows containing missing values (geom_point).
+    ## Warning: Removed 57 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
@@ -376,7 +381,7 @@ p + coord_fixed(ratio = 1.5)
 p + coord_fixed(ratio = 1/4)
 ```
 
-    ## Warning: Removed 54 rows containing missing values (geom_point).
+    ## Warning: Removed 48 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
@@ -846,6 +851,30 @@ ggplot(chic, aes(date, o3)) +
 > **guide** =\> A function used to create a guide or its name. See
 > guides() for more information.
 
+### Changing the legend order of this manually added legend
+
+Simply change the order to the call to `geom_line` and `geom_point` and
+also the order of the values.
+
+``` r
+ggplot(chic, aes(date, temp)) +
+  geom_line(aes(color = "line")) +
+  geom_point(aes(color = "point")) +
+  scale_color_manual(
+    name = NULL,
+    guide = guide_legend(),
+    values = c("line" = "gray", "point" = "darkorange2")
+  ) +
+ guides(
+    color = guide_legend(
+      override.aes = list(linetype = c(1, 0), shape = c(NA, 16))
+    )
+  ) +
+  theme_bw()
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-42-1.png)<!-- -->
+
 ### Changing legend order
 
 #### Option 1 (Easier)
@@ -856,7 +885,7 @@ ggplot(chic, aes(date, temp, color = season)) +
   scale_x_date(date_labels = "%b-%y")
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-42-1.png)<!-- --> To
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-43-1.png)<!-- --> To
 change the legend order in something like (Summer =\> Autumn =\> Winter
 =\> Spring), we can use `scale_color_discrete` (since we have used
 `color = season`)
@@ -869,7 +898,7 @@ ggplot(chic, aes(date, temp, color = season)) +
   )
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-43-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
 
 Or to align with the order of the plot, (Winter, Spring, Summer, Autumn)
 and also add custom legend key label,
@@ -886,7 +915,7 @@ ggplot(chic, aes(date, temp, color = season)) +
   )
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-45-1.png)<!-- -->
 
 or without the `=` mapping in `labels` (Here we have to make sure the
 order in both `breaks` and `labels` are aligned).
@@ -900,7 +929,7 @@ ggplot(chic, aes(date, temp, color = season)) +
   )
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-45-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-46-1.png)<!-- -->
 
 But to add custom color, we need to use `scale_color_manual`,
 
@@ -914,7 +943,7 @@ ggplot(chic, aes(date, temp, color = season)) +
   )
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-46-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-47-1.png)<!-- -->
 
 #### Option 2
 
@@ -944,7 +973,7 @@ p <- chic %>%
 p
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-47-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-48-1.png)<!-- -->
 
 Note that, color encoding got changed here. To add custom color, legend
 key labels in this case,
@@ -958,7 +987,7 @@ p +
   scale_x_date(date_labels = "%b-%y")
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-48-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-49-1.png)<!-- -->
 
 ### Forcing to use different guide styles for legend
 
@@ -972,7 +1001,7 @@ p <- ggplot(chic, aes(date, temp, color = temp)) +
 p
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-49-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-50-1.png)<!-- -->
 
 But we can also force to use the different guides other than the default
 ones.
@@ -981,19 +1010,19 @@ ones.
 p + guides(color = guide_legend())
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-50-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-51-1.png)<!-- -->
 
 ``` r
 p + guides(color = guide_bins())
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-51-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-52-1.png)<!-- -->
 
 ``` r
 p + guides(color = guide_colorsteps())
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-52-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-53-1.png)<!-- -->
 
 ## Working with background
 
@@ -1015,7 +1044,7 @@ ggplot(chic, aes(x = date, y = temp)) +
   )
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-53-1.png)<!-- --> We
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-54-1.png)<!-- --> We
 can see that, the outlines of the panel did not changed, it remained as
 is. Because there’s an another layer on top of `panel.background`, which
 is `panel.border`.
@@ -1031,7 +1060,7 @@ ggplot(chic, aes(x = date, y = temp)) +
   )
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-54-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-55-1.png)<!-- -->
 
 Now its clear that `panel.border` is on top of the whole **panel**,
 since its obscuring the points, grid-lines.
@@ -1052,7 +1081,7 @@ ggplot(chic, aes(x = date, y = temp)) +
   )
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-55-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-56-1.png)<!-- -->
 
 ### Changing `minor_breaks` of the plot
 
@@ -1065,7 +1094,7 @@ ggplot(chic, aes(x = date, y = temp)) +
   )
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-56-1.png)<!-- -->
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-57-1.png)<!-- -->
 
 ### Same background color for whole plot
 
@@ -1080,3 +1109,5 @@ Specifying `plot.margin` as
 -   `unit(c(1, 3, 1, 8), "cm")`
 
 has same effect on the margin.
+
+## Working with facets
