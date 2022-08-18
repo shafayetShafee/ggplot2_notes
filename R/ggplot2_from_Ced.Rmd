@@ -793,4 +793,32 @@ has same effect on the margin.
 
 ## Working with facets
 
+### Difference in Behavior of the scales argument in `facet_grid` and `facet_wrap`
+
+
+```{r}
+p <- ggplot(chic, aes(date, temp)) +
+  geom_point(color = "chartreuse4", alpha = 0.3) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)
+  )
+```
+
+
+```{r}
+p + facet_grid(year ~ season, scales = "free")
+```
+
+**By lookin at above plot, we can see that for a specific row/column, only either x -axis or y-axis is free but not both.**
+
+
+```{r fig.height=6, fig.width=8}
+p + facet_wrap(year ~ season, nrow = 4, scales = "free")
+```
+
+**But, in `facet_wrap` scales are truly free for each faceted plot. Also `facet_wrap` allows for using two variables.**
+
+
+
 

@@ -82,6 +82,11 @@ ggplot2 Notes
     with Margins</a>
 -   <a href="#working-with-facets" id="toc-working-with-facets">Working with
     facets</a>
+    -   <a
+        href="#difference-in-behavior-of-the-scales-argument-in-facet_grid-and-facet_wrap"
+        id="toc-difference-in-behavior-of-the-scales-argument-in-facet_grid-and-facet_wrap">Difference
+        in Behavior of the scales argument in <code>facet_grid</code> and
+        <code>facet_wrap</code></a>
 
 > **DISCLAIMER**: This note is fundamentally a copied version of [this
 > amazing tutorial by CÉDRIC
@@ -345,7 +350,7 @@ p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
 p
 ```
 
-    ## Warning: Removed 38 rows containing missing values (geom_point).
+    ## Warning: Removed 45 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
@@ -365,7 +370,7 @@ axis. NBut we can make it same by using `coord_fixed()` which is uses
 p + coord_fixed()
 ```
 
-    ## Warning: Removed 45 rows containing missing values (geom_point).
+    ## Warning: Removed 53 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -373,7 +378,7 @@ p + coord_fixed()
 p + coord_fixed(ratio = 1.5)
 ```
 
-    ## Warning: Removed 57 rows containing missing values (geom_point).
+    ## Warning: Removed 41 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
@@ -381,7 +386,7 @@ p + coord_fixed(ratio = 1.5)
 p + coord_fixed(ratio = 1/4)
 ```
 
-    ## Warning: Removed 48 rows containing missing values (geom_point).
+    ## Warning: Removed 50 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
@@ -885,10 +890,11 @@ ggplot(chic, aes(date, temp, color = season)) +
   scale_x_date(date_labels = "%b-%y")
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-43-1.png)<!-- --> To
-change the legend order in something like (Summer =\> Autumn =\> Winter
-=\> Spring), we can use `scale_color_discrete` (since we have used
-`color = season`)
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-43-1.png)<!-- -->
+
+To change the legend order in something like (Summer =\> Autumn =\>
+Winter =\> Spring), we can use `scale_color_discrete` (since we have
+used `color = season`)
 
 ``` r
 ggplot(chic, aes(date, temp, color = season)) +
@@ -1044,10 +1050,11 @@ ggplot(chic, aes(x = date, y = temp)) +
   )
 ```
 
-![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-54-1.png)<!-- --> We
-can see that, the outlines of the panel did not changed, it remained as
-is. Because there’s an another layer on top of `panel.background`, which
-is `panel.border`.
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-54-1.png)<!-- -->
+
+We can see that, the outlines of the panel did not changed, it remained
+as is. Because there’s an another layer on top of `panel.background`,
+which is `panel.border`.
 
 ``` r
 ggplot(chic, aes(x = date, y = temp)) +
@@ -1111,3 +1118,32 @@ Specifying `plot.margin` as
 has same effect on the margin.
 
 ## Working with facets
+
+### Difference in Behavior of the scales argument in `facet_grid` and `facet_wrap`
+
+``` r
+p <- ggplot(chic, aes(date, temp)) +
+  geom_point(color = "chartreuse4", alpha = 0.3) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)
+  )
+```
+
+``` r
+p + facet_grid(year ~ season, scales = "free")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-59-1.png)<!-- -->
+
+**By lookin at above plot, we can see that for a specific row/column,
+only either x -axis or y-axis is free but not both.**
+
+``` r
+p + facet_wrap(year ~ season, nrow = 4, scales = "free")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-60-1.png)<!-- -->
+
+**But, in `facet_wrap` scales are truly free for each faceted plot. Also
+`facet_wrap` allows for using two variables.**
