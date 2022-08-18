@@ -8,3 +8,5 @@
 - chocolate
 - darkorange2
 - chartreuse4
+- chartreuse3
+- steelblue

@@ -820,5 +820,8 @@ p + facet_wrap(year ~ season, nrow = 4, scales = "free")
 **But, in `facet_wrap` scales are truly free for each faceted plot. Also `facet_wrap` allows for using two variables.**
 
 
+### Modify Style of Strip Texts
+
+
 
 
