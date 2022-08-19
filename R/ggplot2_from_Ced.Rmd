@@ -1030,6 +1030,9 @@ ggplot(chic) +
 
 In `scale_*_manual` (* can be color/colour/fill) the number of colors specified in `values` argument should match the number of categories of the variable that are mapped to color aesthetics.
 
+## Color for Qualitative Vars
+
+
 ```{r}
 p <- ggplot(chic, aes(x = date, y = temp, color = season)) +
   geom_point() +
@@ -1075,5 +1078,12 @@ p + scale_color_tableau()
 ```{r}
 library(ggsci)
 library(patchwork)
+
+p1 <- p + scale_color_aaas()
+p2 <- p + scale_color_npg()
+
+(p1 + p2) * theme(legend.position = "top")
 ```
 
+
+Note the syntax of using `*` in patchwork to impact the theme change for both p1 and p2 plot.

@@ -96,6 +96,14 @@ ggplot2 Notes
         together</a>
 -   <a href="#working-with-color" id="toc-working-with-color">Working with
     color</a>
+-   <a href="#color-for-qualitative-vars"
+    id="toc-color-for-qualitative-vars">Color for Qualitative Vars</a>
+    -   <a href="#palettes-in-base-r" id="toc-palettes-in-base-r">Palettes in
+        Base-R</a>
+    -   <a
+        href="#examples-of-r-packages-that-provide-nice-color-palettes-and-themes"
+        id="toc-examples-of-r-packages-that-provide-nice-color-palettes-and-themes">Examples
+        of R packages that provide nice color palettes and themes</a>
 
 > **DISCLAIMER**: This note is fundamentally a copied version of [this
 > amazing tutorial by CÉDRIC
@@ -359,7 +367,7 @@ p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
 p
 ```
 
-    ## Warning: Removed 49 rows containing missing values (geom_point).
+    ## Warning: Removed 45 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
@@ -379,7 +387,7 @@ axis. NBut we can make it same by using `coord_fixed()` which is uses
 p + coord_fixed()
 ```
 
-    ## Warning: Removed 54 rows containing missing values (geom_point).
+    ## Warning: Removed 59 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -387,7 +395,7 @@ p + coord_fixed()
 p + coord_fixed(ratio = 1.5)
 ```
 
-    ## Warning: Removed 45 rows containing missing values (geom_point).
+    ## Warning: Removed 46 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
@@ -395,7 +403,7 @@ p + coord_fixed(ratio = 1.5)
 p + coord_fixed(ratio = 1/4)
 ```
 
-    ## Warning: Removed 48 rows containing missing values (geom_point).
+    ## Warning: Removed 51 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
@@ -1388,3 +1396,81 @@ ggplot(chic) +
 ```
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-66-1.png)<!-- -->
+
+In `scale_*_manual` (\* can be color/colour/fill) the number of colors
+specified in `values` argument should match the number of categories of
+the variable that are mapped to color aesthetics.
+
+## Color for Qualitative Vars
+
+``` r
+p <- ggplot(chic, aes(x = date, y = temp, color = season)) +
+  geom_point() +
+  labs(x = "Year", y = "Temperature (°F)", color = NULL)
+
+p + scale_color_brewer(palette = "Set1")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-67-1.png)<!-- -->
+
+There are many more `scale_color/fill_` function in `ggplot2`.
+
+### Palettes in Base-R
+
+The following palettes are available for use with these scales:
+
+-   **Diverging** =\> BrBG, PiYG, PRGn, PuOr, RdBu, RdGy, RdYlBu,
+    RdYlGn, Spectral
+
+-   **Qualitative** =\> Accent, Dark2, Paired, Pastel1, Pastel2, Set1,
+    Set2, Set3
+
+-   **Sequential** =\> Blues, BuGn, BuPu, GnBu, Greens, Greys, Oranges,
+    OrRd, PuBu, PuBuGn, PuRd, Purples, RdPu, Reds, YlGn, YlGnBu, YlOrBr,
+    YlOrRd
+
+And these palettes look like,
+
+``` r
+RColorBrewer::display.brewer.all()
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-68-1.png)<!-- -->
+
+### Examples of R packages that provide nice color palettes and themes
+
+#### `{ggthemes}`
+
+``` r
+library(ggthemes)
+```
+
+    ## 
+    ## Attaching package: 'ggthemes'
+
+    ## The following object is masked from 'package:cowplot':
+    ## 
+    ##     theme_map
+
+``` r
+p + scale_color_tableau()
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-69-1.png)<!-- -->
+
+#### `{ggsci}`
+
+``` r
+library(ggsci)
+library(patchwork)
+
+p1 <- p + scale_color_aaas()
+p2 <- p + scale_color_npg()
+
+(p1 + p2) * theme(legend.position = "top")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-70-1.png)<!-- -->
+
+Note the syntax of using `*` in patchwork to impact the theme change for
+both p1 and p2 plot.
