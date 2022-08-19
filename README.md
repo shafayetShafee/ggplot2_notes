@@ -6,6 +6,7 @@ It's collection of tutorials regarding ggplot2 tips and trick from various sourc
 
 - [List of Some useful colors from base-R](some_useful_color.md)
 - [Complete list of base R colors](Rcolor.pdf)
+- [Comprehensive collection of color Palettes compiled by Emil Hvitfeldt]((R/compre_list_palettes_from_Emil.md)
 
 ## Acknowledgement
 

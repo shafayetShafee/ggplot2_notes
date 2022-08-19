@@ -10,3 +10,6 @@
 - chartreuse4
 - chartreuse3
 - steelblue
+- dodgerblue4
+- darkolivegreen4
+- goldenrod1

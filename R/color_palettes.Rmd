@@ -1,0 +1,31 @@
+---
+title: "Color Palettes"
+output:
+  github_document:
+    toc: true
+    toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+```
+
+
+This is compilation of many resources about color-palettes for data viz in R.
+
+
+### Online Tools for creating color palettes
+
+- [ColorBrewer Palettes](https://colorbrewer2.org/)
+
+
+### Color palettes in Base-R
+
+```{r fig.height=8}
+RColorBrewer::display.brewer.all()
+```
+
+
+### Extension package
+
+Just Install the package [`{paletteer}`](https://github.com/EmilHvitfeldt/paletteer). It will get you all covered. Also [check this this comprehensive list made by Emil Hvitfeldt (author of `{paletteer}`)](R/compre_list_palettes_from_Emil.md).

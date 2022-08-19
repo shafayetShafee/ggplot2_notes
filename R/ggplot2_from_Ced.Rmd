@@ -1027,3 +1027,53 @@ ggplot(chic) +
              color = "darkorange2", fill = "dodgerblue")
 ```
 
+
+In `scale_*_manual` (* can be color/colour/fill) the number of colors specified in `values` argument should match the number of categories of the variable that are mapped to color aesthetics.
+
+```{r}
+p <- ggplot(chic, aes(x = date, y = temp, color = season)) +
+  geom_point() +
+  labs(x = "Year", y = "Temperature (°F)", color = NULL)
+
+p + scale_color_brewer(palette = "Set1")
+```
+
+
+There are many more `scale_color/fill_` function in `ggplot2`.
+
+### Palettes in Base-R
+
+The following palettes are available for use with these scales:
+
+- **Diverging** => BrBG, PiYG, PRGn, PuOr, RdBu, RdGy, RdYlBu, RdYlGn, Spectral
+
+- **Qualitative** => Accent, Dark2, Paired, Pastel1, Pastel2, Set1, Set2, Set3
+
+- **Sequential** => Blues, BuGn, BuPu, GnBu, Greens, Greys, Oranges, OrRd, PuBu, PuBuGn, PuRd, Purples, RdPu, Reds, YlGn, YlGnBu, YlOrBr, YlOrRd
+
+And these palettes look like,
+
+
+```{r fig.height=8}
+RColorBrewer::display.brewer.all()
+```
+
+
+### Examples of R packages that provide nice color palettes and themes
+
+#### `{ggthemes}`
+
+```{r}
+library(ggthemes)
+
+p + scale_color_tableau()
+```
+
+
+#### `{ggsci}`
+
+```{r}
+library(ggsci)
+library(patchwork)
+```
+
