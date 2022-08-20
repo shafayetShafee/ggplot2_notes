@@ -116,6 +116,9 @@ ggplot2 Notes
         setting colors for diverging color schemes</a>
     -   <a href="#extension-package" id="toc-extension-package">Extension
         package</a>
+-   <a href="#modify-color-palettes-afterwards"
+    id="toc-modify-color-palettes-afterwards">Modify Color Palettes
+    Afterwards</a>
 
 > **DISCLAIMER**: This note is fundamentally a copied version of [this
 > amazing tutorial by CÉDRIC
@@ -379,7 +382,7 @@ p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
 p
 ```
 
-    ## Warning: Removed 44 rows containing missing values (geom_point).
+    ## Warning: Removed 53 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
@@ -399,7 +402,7 @@ axis. NBut we can make it same by using `coord_fixed()` which is uses
 p + coord_fixed()
 ```
 
-    ## Warning: Removed 46 rows containing missing values (geom_point).
+    ## Warning: Removed 61 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -407,7 +410,7 @@ p + coord_fixed()
 p + coord_fixed(ratio = 1.5)
 ```
 
-    ## Warning: Removed 54 rows containing missing values (geom_point).
+    ## Warning: Removed 58 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
@@ -415,7 +418,7 @@ p + coord_fixed(ratio = 1.5)
 p + coord_fixed(ratio = 1/4)
 ```
 
-    ## Warning: Removed 57 rows containing missing values (geom_point).
+    ## Warning: Removed 56 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
@@ -1583,3 +1586,78 @@ g2 <- gb + scale_color_scico(palette = "hawaii", direction = -1)
 ```
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-77-1.png)<!-- -->
+
+## Modify Color Palettes Afterwards
+
+As per the documentation of `ggplot2` on `control aesthetic evaluation`
+
+> In order to map from stat transformed data you should use the
+> after_stat() function to flag that evaluation of the aesthetic mapping
+> should be postponed until after stat transformation.
+
+> Similarly, you should use after_scale() to flag evaluation of mapping
+> for after data has been scaled.
+
+> If you want to map the same aesthetic multiple times, e.g. map x to a
+> data column for the stat, but remap it for the geom, you can use the
+> stage() function to collect multiple mappings.
+
+An example of mapping from scaled data could be to use a desaturated
+version of the stroke colour for fill.
+
+``` r
+ggplot(chic, aes(date, temp)) +
+  geom_boxplot(aes(
+    color = season,
+    fill = after_scale(alpha(color, 0.4))
+  )) +
+  scale_color_brewer(palette = "Dark2", guide = "none")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-78-1.png)<!-- -->
+
+In this regard `colorspace::desaturate`, `colorspace::lighten`,
+`colorspace::darken` functions and `ggdark::invert_color()` are very
+useful.
+
+``` r
+library(colorspace)
+
+ggplot(chic, aes(date, temp)) +
+  geom_boxplot(aes(
+    color = season,
+    fill = after_scale(desaturate(lighten(color, 0.6), 0.6))
+  )) +
+  scale_color_brewer(palette = "Dark2", guide = "none")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-79-1.png)<!-- -->
+
+``` r
+library(ggdark)
+
+ggplot(chic, aes(date, temp, color = temp)) +
+  geom_point(size = 5) +
+  # add a layer of point on this with inverted color
+  geom_point(aes(color = temp,
+                 color = after_scale(invert_color(color)))) +
+  scale_color_scico(palette = "hawaii", guide = "none")
+```
+
+    ## Warning: Duplicated aesthetics after name standardisation: colour
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-80-1.png)<!-- -->
+
+Or using `stage` instead of `after_scale`
+
+``` r
+ggplot(chic, aes(date, temp, color = temp)) +
+  geom_point(size = 5) +
+  # add a layer of point on this with inverted color
+  geom_point(aes(
+    color = stage(temp, after_scale = invert_color(color))
+  )) +
+  scale_color_scico(palette = "hawaii", guide = "none")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-81-1.png)<!-- -->

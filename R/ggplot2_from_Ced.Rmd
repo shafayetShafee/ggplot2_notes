@@ -1175,5 +1175,69 @@ g2 <- gb + scale_color_scico(palette = "hawaii", direction = -1)
 ```
 
 
+## Modify Color Palettes Afterwards
+
+
+As per the documentation of `ggplot2` on `control aesthetic evaluation`
+
+> In order to map from stat transformed data you should use the after_stat() function to flag that evaluation of the aesthetic mapping should be postponed until after stat transformation. 
+
+> Similarly, you should use after_scale() to flag evaluation of mapping for after data has been scaled. 
+
+> If you want to map the same aesthetic multiple times, e.g. map x to a data column for the stat, but remap it for the geom, you can use the stage() function to collect multiple mappings.
+
+
+An example of mapping from scaled data could be to use a desaturated version of the stroke colour for fill.
+
+
+```{r}
+ggplot(chic, aes(date, temp)) +
+  geom_boxplot(aes(
+    color = season,
+    fill = after_scale(alpha(color, 0.4))
+  )) +
+  scale_color_brewer(palette = "Dark2", guide = "none")
+```
+
+
+
+In this regard `colorspace::desaturate`, `colorspace::lighten`, `colorspace::darken` functions and `ggdark::invert_color()` are very useful.
+
+
+```{r}
+library(colorspace)
+
+ggplot(chic, aes(date, temp)) +
+  geom_boxplot(aes(
+    color = season,
+    fill = after_scale(desaturate(lighten(color, 0.6), 0.6))
+  )) +
+  scale_color_brewer(palette = "Dark2", guide = "none")
+```
+
+
+
+```{r}
+library(ggdark)
+
+ggplot(chic, aes(date, temp, color = temp)) +
+  geom_point(size = 5) +
+  # add a layer of point on this with inverted color
+  geom_point(aes(color = temp,
+                 color = after_scale(invert_color(color)))) +
+  scale_color_scico(palette = "hawaii", guide = "none")
+```
+
+Or using `stage` instead of `after_scale`
+
+```{r}
+ggplot(chic, aes(date, temp, color = temp)) +
+  geom_point(size = 5) +
+  # add a layer of point on this with inverted color
+  geom_point(aes(
+    color = stage(temp, after_scale = invert_color(color))
+  )) +
+  scale_color_scico(palette = "hawaii", guide = "none")
+```
 
 
