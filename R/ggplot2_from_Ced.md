@@ -114,6 +114,8 @@ ggplot2 Notes
     -   <a href="#manually-setting-colors-for-diverging-color-schemes"
         id="toc-manually-setting-colors-for-diverging-color-schemes">Manually
         setting colors for diverging color schemes</a>
+    -   <a href="#extension-package" id="toc-extension-package">Extension
+        package</a>
 
 > **DISCLAIMER**: This note is fundamentally a copied version of [this
 > amazing tutorial by CÉDRIC
@@ -377,7 +379,7 @@ p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
 p
 ```
 
-    ## Warning: Removed 47 rows containing missing values (geom_point).
+    ## Warning: Removed 44 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
@@ -397,7 +399,7 @@ axis. NBut we can make it same by using `coord_fixed()` which is uses
 p + coord_fixed()
 ```
 
-    ## Warning: Removed 66 rows containing missing values (geom_point).
+    ## Warning: Removed 46 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -405,7 +407,7 @@ p + coord_fixed()
 p + coord_fixed(ratio = 1.5)
 ```
 
-    ## Warning: Removed 63 rows containing missing values (geom_point).
+    ## Warning: Removed 54 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
@@ -413,7 +415,7 @@ p + coord_fixed(ratio = 1.5)
 p + coord_fixed(ratio = 1/4)
 ```
 
-    ## Warning: Removed 43 rows containing missing values (geom_point).
+    ## Warning: Removed 57 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
@@ -1547,3 +1549,37 @@ gb + scale_color_gradient2(
 ```
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-75-1.png)<!-- -->
+
+### Extension package
+
+#### `{rcartocolor}`
+
+``` r
+library(rcartocolor)
+library(patchwork)
+
+g1 <- gb + scale_color_carto_c(palette = "BurgY1")
+```
+
+    ## Warning in carto_pal_name(palette, type): Unknown palette BurgY1
+
+``` r
+g2 <- gb + scale_color_carto_c(palette = "Earth")
+
+(g1 + g2) * theme(legend.position = "bottom")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-76-1.png)<!-- -->
+
+#### `{scico}`
+
+``` r
+library(scico)
+
+g1 <- gb + scale_color_scico(palette = "berlin")
+g2 <- gb + scale_color_scico(palette = "hawaii", direction = -1)
+
+(g1 + g2) * theme(legend.position = "bottom")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-77-1.png)<!-- -->

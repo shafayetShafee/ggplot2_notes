@@ -1148,3 +1148,32 @@ gb + scale_color_gradient2(
 ```
 
 
+### Extension package
+
+#### `{rcartocolor}`
+
+```{r}
+library(rcartocolor)
+library(patchwork)
+
+g1 <- gb + scale_color_carto_c(palette = "BurgY1")
+g2 <- gb + scale_color_carto_c(palette = "Earth")
+
+(g1 + g2) * theme(legend.position = "bottom")
+```
+
+
+#### `{scico}`
+
+```{r}
+library(scico)
+
+g1 <- gb + scale_color_scico(palette = "berlin")
+g2 <- gb + scale_color_scico(palette = "hawaii", direction = -1)
+
+(g1 + g2) * theme(legend.position = "bottom")
+```
+
+
+
+
