@@ -1030,7 +1030,9 @@ ggplot(chic) +
 
 In `scale_*_manual` (* can be color/colour/fill) the number of colors specified in `values` argument should match the number of categories of the variable that are mapped to color aesthetics.
 
-## Color for Qualitative Vars
+## Color for Qualitative Variables
+
+By Qualitative variables nominal, ordinal or binary variables are meant.
 
 
 ```{r}
@@ -1087,3 +1089,62 @@ p2 <- p + scale_color_npg()
 
 
 Note the syntax of using `*` in patchwork to impact the theme change for both p1 and p2 plot.
+
+
+## Color for Quantitative Variables
+
+Quantitative variables are of two types. 
+
+1. Continuous variable 
+2. Discrete variable.
+
+Now color palettes for continuous vars could be sequential or diverging
+
+- scale_*_gradient() => for sequential gradient
+- scale_*_gradient2() => for diverging 
+
+
+```{r}
+gb <- ggplot(chic, aes(date, temp, color = temp)) +
+  geom_point()
+
+gb + scale_color_continuous()
+```
+
+
+or similarly,
+
+```{r}
+gb + scale_color_gradient()
+```
+
+and using for diverging color scheme,
+
+```{r}
+mid <- mean(chic$temp)
+
+gb + scale_color_gradient2(midpoint = mid)
+```
+
+
+using `midpoint` to specify where the color diverge should happen.
+
+
+### Manually setting color for sequential color schemes
+
+```{r}
+gb + scale_color_gradient(
+  low = "darkkhaki", high = "darkgreen"
+)
+```
+
+
+### Manually setting colors for diverging color schemes
+
+```{r}
+gb + scale_color_gradient2(
+  midpoint = mid, low = "#dd8a0b", high = "#32a676"
+)
+```
+
+

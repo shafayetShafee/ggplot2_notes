@@ -96,14 +96,24 @@ ggplot2 Notes
         together</a>
 -   <a href="#working-with-color" id="toc-working-with-color">Working with
     color</a>
--   <a href="#color-for-qualitative-vars"
-    id="toc-color-for-qualitative-vars">Color for Qualitative Vars</a>
+-   <a href="#color-for-qualitative-variables"
+    id="toc-color-for-qualitative-variables">Color for Qualitative
+    Variables</a>
     -   <a href="#palettes-in-base-r" id="toc-palettes-in-base-r">Palettes in
         Base-R</a>
     -   <a
         href="#examples-of-r-packages-that-provide-nice-color-palettes-and-themes"
         id="toc-examples-of-r-packages-that-provide-nice-color-palettes-and-themes">Examples
         of R packages that provide nice color palettes and themes</a>
+-   <a href="#color-for-quantitative-variables"
+    id="toc-color-for-quantitative-variables">Color for Quantitative
+    Variables</a>
+    -   <a href="#manually-setting-color-for-sequential-color-schemes"
+        id="toc-manually-setting-color-for-sequential-color-schemes">Manually
+        setting color for sequential color schemes</a>
+    -   <a href="#manually-setting-colors-for-diverging-color-schemes"
+        id="toc-manually-setting-colors-for-diverging-color-schemes">Manually
+        setting colors for diverging color schemes</a>
 
 > **DISCLAIMER**: This note is fundamentally a copied version of [this
 > amazing tutorial by CÉDRIC
@@ -367,7 +377,7 @@ p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
 p
 ```
 
-    ## Warning: Removed 45 rows containing missing values (geom_point).
+    ## Warning: Removed 47 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
@@ -387,7 +397,7 @@ axis. NBut we can make it same by using `coord_fixed()` which is uses
 p + coord_fixed()
 ```
 
-    ## Warning: Removed 59 rows containing missing values (geom_point).
+    ## Warning: Removed 66 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -395,7 +405,7 @@ p + coord_fixed()
 p + coord_fixed(ratio = 1.5)
 ```
 
-    ## Warning: Removed 46 rows containing missing values (geom_point).
+    ## Warning: Removed 63 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
@@ -403,7 +413,7 @@ p + coord_fixed(ratio = 1.5)
 p + coord_fixed(ratio = 1/4)
 ```
 
-    ## Warning: Removed 51 rows containing missing values (geom_point).
+    ## Warning: Removed 43 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
@@ -1401,7 +1411,9 @@ In `scale_*_manual` (\* can be color/colour/fill) the number of colors
 specified in `values` argument should match the number of categories of
 the variable that are mapped to color aesthetics.
 
-## Color for Qualitative Vars
+## Color for Qualitative Variables
+
+By Qualitative variables nominal, ordinal or binary variables are meant.
 
 ``` r
 p <- ggplot(chic, aes(x = date, y = temp, color = season)) +
@@ -1474,3 +1486,64 @@ p2 <- p + scale_color_npg()
 
 Note the syntax of using `*` in patchwork to impact the theme change for
 both p1 and p2 plot.
+
+## Color for Quantitative Variables
+
+Quantitative variables are of two types.
+
+1.  Continuous variable
+2.  Discrete variable.
+
+Now color palettes for continuous vars could be sequential or diverging
+
+-   scale\_\*\_gradient() =\> for sequential gradient
+-   scale\_\*\_gradient2() =\> for diverging
+
+``` r
+gb <- ggplot(chic, aes(date, temp, color = temp)) +
+  geom_point()
+
+gb + scale_color_continuous()
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-71-1.png)<!-- -->
+
+or similarly,
+
+``` r
+gb + scale_color_gradient()
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-72-1.png)<!-- -->
+
+and using for diverging color scheme,
+
+``` r
+mid <- mean(chic$temp)
+
+gb + scale_color_gradient2(midpoint = mid)
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-73-1.png)<!-- -->
+
+using `midpoint` to specify where the color diverge should happen.
+
+### Manually setting color for sequential color schemes
+
+``` r
+gb + scale_color_gradient(
+  low = "darkkhaki", high = "darkgreen"
+)
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-74-1.png)<!-- -->
+
+### Manually setting colors for diverging color schemes
+
+``` r
+gb + scale_color_gradient2(
+  midpoint = mid, low = "#dd8a0b", high = "#32a676"
+)
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-75-1.png)<!-- -->
