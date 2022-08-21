@@ -1,0 +1,19 @@
+---
+title: "stat summary of Ggplot2"
+output:
+  github_document:
+    toc: true
+    toc_depth: 3 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+
+```
+
+
+> **DISCLAIMER:** This note is based on (mostly copy pasted from) these sources
+> [1] [demystifying-stat-layers-ggplot2](https://yjunechoe.github.io/posts/2020-09-26-demystifying-stat-layers-ggplot2/)
+
+`stat_summary` works in the following order:
+
