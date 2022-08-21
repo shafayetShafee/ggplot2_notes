@@ -28,5 +28,49 @@ knitr::opts_chunk$set(echo = TRUE, error = TRUE)
 4. If the transformed data contains all the required mappings for the geom, then geom will be printed.
 
 
-- **`stat_summary` summerizes one dimension of the data.**
+- **`stat_summary` summarizes one dimension of the data.**
 
+
+```{r warning=FALSE, message=FALSE}
+library(dplyr)
+library(ggplot2)
+library(tibble)
+```
+
+
+
+```{r}
+height_df <- tibble(group = "A",
+                    height = rnorm(30, 170, 10))
+
+height_df %>% 
+  ggplot(aes(x = group, y = height)) +
+  stat_summary()
+```
+
+
+So as the points mentioned above, `geom = pointrange` and `fun.data = mean_se` are used here.
+
+To verify this, we can actually look into the transformed data by `mean_se` and by `stat_summary`.
+
+The `mean_se` function internally looks like,
+
+```{r}
+mean_se
+
+mean_se(height_df$height)
+```
+
+```{r}
+point_range_plot <- height_df %>% 
+  ggplot(aes(group, height)) + 
+  stat_summary()
+
+layer_data(point_range_plot, 1) # here 1 means 1st layer which is pointrange here,
+
+# but since here only one geom is used, so if we omit 1, consequence will be same.
+```
+
+which is similar as above, so it is proved that `stat_summary` using `mean_se` as default.
+
+### Some Usecases of stat_summary
