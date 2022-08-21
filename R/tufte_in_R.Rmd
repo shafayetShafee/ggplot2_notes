@@ -1,0 +1,15 @@
+---
+title: "Tufte In R"
+output:
+  github_document:
+    toc: true
+    toc_depth: 3 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+
+```
+
+
+> **DISCLAIMER** => This file is basically a copy paste of [this original source on tufte dataviz style with R](http://motioninsocial.com/tufte/)

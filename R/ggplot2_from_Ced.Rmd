@@ -1241,3 +1241,88 @@ ggplot(chic, aes(date, temp, color = temp)) +
 ```
 
 
+## Working with Themes
+
+#### `{ggthemes}` => `theme_economist()`
+
+```{r}
+library(ggthemes)
+
+ggplot(chic, aes(x = date, y = temp, color = season)) +
+  geom_point() +
+  labs(x = "Year", y = "Temperature (°F)") +
+  ggtitle("Ups and Downs of Chicago's Daily Temperatures") +
+  theme_economist() +
+  scale_color_economist(name =  NULL)
+```
+
+
+#### `{ggthemes}` => `theme_tufte()`
+
+
+```{r}
+chic_2000 <- dplyr::filter(chic, year == 2000)
+
+ggplot(chic_2000, aes(temp, o3)) +
+  geom_point() +
+  labs(x = "Temperature", y = "Ozone") +
+  ggtitle("Temperature and Ozone in year 2000") +
+  theme_tufte()
+```
+
+
+To learn more example about tufte style plotting with R, [see this](tufte_in_R.md)
+
+
+```{r}
+library(hrbrthemes)
+
+ggplot(chic, aes(x = temp, y = o3)) +
+  geom_point(aes(color = dewpoint), show.legend = FALSE) +
+  labs(x = "Temperature (°F)", y = "Ozone") +
+  ggtitle("Temperature and Ozone Levels in Chicago")
+```
+
+### Change the font of all Text elements of the plot
+
+
+To change the font-family of all text elements of plot easily and directly, we can use `base_family` argument of the `theme_*` functions
+
+
+```{r}
+sysfonts::font_add_google("Playfair Display", ## name of google font
+                "playfair") ## name that will be used in R
+
+g <- g <- ggplot(chic, aes(x = date, y = temp)) +
+  geom_point(color = "firebrick") +
+  labs(x = "Year", y = "Temperature (°F)",
+       title = "Temperatures in Chicago")
+
+showtext::showtext_auto()
+
+g + theme_bw(base_family = "playfair")
+```
+
+
+### Change the size of all elements
+
+we can do this using `base_size` argument.
+
+```{r}
+
+sysfonts::font_add_google("Roboto Condensed", "Roboto Condensed")
+
+g + theme_bw(base_size = 20, base_family = "Roboto Condensed")
+```
+
+
+### Change the size of all line and Rect Elements
+
+
+```{r}
+g + theme_bw(base_line_size = 1, base_rect_size = 1)
+```
+
+
+### Create my Own theme
+

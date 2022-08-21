@@ -119,6 +119,19 @@ ggplot2 Notes
 -   <a href="#modify-color-palettes-afterwards"
     id="toc-modify-color-palettes-afterwards">Modify Color Palettes
     Afterwards</a>
+-   <a href="#working-with-themes" id="toc-working-with-themes">Working with
+    Themes</a>
+    -   <a href="#change-the-font-of-all-text-elements-of-the-plot"
+        id="toc-change-the-font-of-all-text-elements-of-the-plot">Change the
+        font of all Text elements of the plot</a>
+    -   <a href="#change-the-size-of-all-elements"
+        id="toc-change-the-size-of-all-elements">Change the size of all
+        elements</a>
+    -   <a href="#change-the-size-of-all-line-and-rect-elements"
+        id="toc-change-the-size-of-all-line-and-rect-elements">Change the size
+        of all line and Rect Elements</a>
+    -   <a href="#create-my-own-theme" id="toc-create-my-own-theme">Create my
+        Own theme</a>
 
 > **DISCLAIMER**: This note is fundamentally a copied version of [this
 > amazing tutorial by CÉDRIC
@@ -382,7 +395,7 @@ p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
 p
 ```
 
-    ## Warning: Removed 53 rows containing missing values (geom_point).
+    ## Warning: Removed 69 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
@@ -402,7 +415,7 @@ axis. NBut we can make it same by using `coord_fixed()` which is uses
 p + coord_fixed()
 ```
 
-    ## Warning: Removed 61 rows containing missing values (geom_point).
+    ## Warning: Removed 59 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -410,7 +423,7 @@ p + coord_fixed()
 p + coord_fixed(ratio = 1.5)
 ```
 
-    ## Warning: Removed 58 rows containing missing values (geom_point).
+    ## Warning: Removed 57 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
@@ -418,7 +431,7 @@ p + coord_fixed(ratio = 1.5)
 p + coord_fixed(ratio = 1/4)
 ```
 
-    ## Warning: Removed 56 rows containing missing values (geom_point).
+    ## Warning: Removed 45 rows containing missing values (geom_point).
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
@@ -1661,3 +1674,99 @@ ggplot(chic, aes(date, temp, color = temp)) +
 ```
 
 ![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-81-1.png)<!-- -->
+
+## Working with Themes
+
+#### `{ggthemes}` =\> `theme_economist()`
+
+``` r
+library(ggthemes)
+
+ggplot(chic, aes(x = date, y = temp, color = season)) +
+  geom_point() +
+  labs(x = "Year", y = "Temperature (°F)") +
+  ggtitle("Ups and Downs of Chicago's Daily Temperatures") +
+  theme_economist() +
+  scale_color_economist(name =  NULL)
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-82-1.png)<!-- -->
+
+#### `{ggthemes}` =\> `theme_tufte()`
+
+``` r
+chic_2000 <- dplyr::filter(chic, year == 2000)
+
+ggplot(chic_2000, aes(temp, o3)) +
+  geom_point() +
+  labs(x = "Temperature", y = "Ozone") +
+  ggtitle("Temperature and Ozone in year 2000") +
+  theme_tufte()
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-83-1.png)<!-- -->
+
+To learn more example about tufte style plotting with R, [see
+this](tufte_in_R.md)
+
+``` r
+library(hrbrthemes)
+```
+
+    ## NOTE: Either Arial Narrow or Roboto Condensed fonts are required to use these themes.
+
+    ##       Please use hrbrthemes::import_roboto_condensed() to install Roboto Condensed and
+
+    ##       if Arial Narrow is not on your system, please see https://bit.ly/arialnarrow
+
+``` r
+ggplot(chic, aes(x = temp, y = o3)) +
+  geom_point(aes(color = dewpoint), show.legend = FALSE) +
+  labs(x = "Temperature (°F)", y = "Ozone") +
+  ggtitle("Temperature and Ozone Levels in Chicago")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-84-1.png)<!-- -->
+
+### Change the font of all Text elements of the plot
+
+To change the font-family of all text elements of plot easily and
+directly, we can use `base_family` argument of the `theme_*` functions
+
+``` r
+sysfonts::font_add_google("Playfair Display", ## name of google font
+                "playfair") ## name that will be used in R
+
+g <- g <- ggplot(chic, aes(x = date, y = temp)) +
+  geom_point(color = "firebrick") +
+  labs(x = "Year", y = "Temperature (°F)",
+       title = "Temperatures in Chicago")
+
+showtext::showtext_auto()
+
+g + theme_bw(base_family = "playfair")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-85-1.png)<!-- -->
+
+### Change the size of all elements
+
+we can do this using `base_size` argument.
+
+``` r
+sysfonts::font_add_google("Roboto Condensed", "Roboto Condensed")
+
+g + theme_bw(base_size = 20, base_family = "Roboto Condensed")
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-86-1.png)<!-- -->
+
+### Change the size of all line and Rect Elements
+
+``` r
+g + theme_bw(base_line_size = 1, base_rect_size = 1)
+```
+
+![](ggplot2_from_Ced_files/figure-gfm/unnamed-chunk-87-1.png)<!-- -->
+
+### Create my Own theme
