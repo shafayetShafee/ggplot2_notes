@@ -10,6 +10,16 @@ It's collection of tutorials regarding ggplot2 tips and trick from various sourc
 
 ## Acknowledgement
 
-Resources from where I have compiled thess note,
+Resources from where I have compiled these note,
+
+### General
 
 -   [A GGPLOT2 TUTORIAL FOR BEAUTIFUL PLOTTING IN R](https://cedricscherer.netlify.app/2019/08/05/a-ggplot2-tutorial-for-beautiful-plotting-in-r/), which is an amazing and very informative tutorial from ggplot guru CÉDRIC SCHERER.
+
+### stat_layer functions
+
+- [Demystifying stat_ layers in {ggplot2}](https://yjunechoe.github.io/posts/2020-09-26-demystifying-stat-layers-ggplot2/)
+
+- [Add custom summary statistics in ggplot2](https://dataatomic.com/r/stats-ggplot/)
+
+- 

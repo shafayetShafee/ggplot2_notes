@@ -4,8 +4,8 @@ stat summary of Ggplot2
 -   <a href="#demystifying-stat_-layers-in-ggplot2"
     id="toc-demystifying-stat_-layers-in-ggplot2">Demystifying stat_ layers
     in {ggplot2}</a>
-    -   <a href="#some-usecases-of-stat_" id="toc-some-usecases-of-stat_">Some
-        Usecases of stat_*</a>
+    -   <a href="#some-usecases-of-stat_summary"
+        id="toc-some-usecases-of-stat_summary">Some Usecases of stat_summary</a>
 
 > **DISCLAIMER:** This note is based on (mostly copy pasted from) these
 > sources \[1\]
@@ -70,7 +70,7 @@ mean_se
     ##     new_data_frame(list(y = mean, ymin = mean - se, ymax = mean + 
     ##         se), n = 1)
     ## }
-    ## <bytecode: 0x0000027ad95645b0>
+    ## <bytecode: 0x00000290149b0168>
     ## <environment: namespace:ggplot2>
 
 ``` r
@@ -78,7 +78,7 @@ mean_se(height_df$height)
 ```
 
     ##          y     ymin     ymax
-    ## 1 170.2081 168.3855 172.0307
+    ## 1 170.5571 169.0382 172.0759
 
 ``` r
 point_range_plot <- height_df %>% 
@@ -91,7 +91,7 @@ layer_data(point_range_plot, 1) # here 1 means 1st layer which is pointrange her
     ## No summary function supplied, defaulting to `mean_se()`
 
     ##   x group        y     ymin     ymax PANEL flipped_aes colour size linetype
-    ## 1 1     1 170.2081 168.3855 172.0307     1       FALSE  black  0.5        1
+    ## 1 1     1 170.5571 169.0382 172.0759     1       FALSE  black  0.5        1
     ##   shape fill alpha stroke
     ## 1    19   NA    NA      1
 
@@ -102,4 +102,66 @@ layer_data(point_range_plot, 1) # here 1 means 1st layer which is pointrange her
 which is similar as above, so it is proved that `stat_summary` using
 `mean_se` as default.
 
-### Some Usecases of stat\_\*
+### Some Usecases of stat_summary
+
+#### Error bar showing 95% confidence Interval
+
+``` r
+data(penguins, package = "palmerpenguins")
+
+peng <- na.omit(penguins)
+```
+
+``` r
+peng %>% 
+  ggplot(aes(sex, body_mass_g)) +
+  stat_summary(
+    fun.data = ~mean_se(.x, mult = 1.96),
+    geom = "errorbar"
+  )
+```
+
+![](understanding_stat_summary_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+#### A color coded bar plot of median
+
+Here we want to color a bar of medians if median for a specific bar is
+less than a threshold (say 40).
+
+``` r
+# custom function for fun.data
+
+calc_median_and_color <- function(x, threshold = 40) {
+  tibble(y = median(x)) %>% 
+    mutate(
+      fill = if_else(y < threshold, "pink",  "gray35")
+    )
+}
+
+peng %>% 
+  ggplot(aes(species, bill_length_mm)) +
+  stat_summary(
+    fun.data = calc_median_and_color,
+    geom = "bar"
+  )
+```
+
+![](understanding_stat_summary_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+Here we have deliberately used the colname `fill` so that it used as an
+argument of geom.
+
+#### pointrange plot with changing size
+
+``` r
+peng %>% 
+  ggplot(aes(species, bill_length_mm)) +
+  stat_summary(
+    fun.data = \(x) {
+      scaled_size <- length(x) / nrow(peng)
+      mean_se(x) %>% mutate(size = scaled_size)
+    }
+  )
+```
+
+![](understanding_stat_summary_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->

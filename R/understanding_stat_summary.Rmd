@@ -74,3 +74,66 @@ layer_data(point_range_plot, 1) # here 1 means 1st layer which is pointrange her
 which is similar as above, so it is proved that `stat_summary` using `mean_se` as default.
 
 ### Some Usecases of stat_summary
+
+#### Error bar showing 95% confidence Interval
+
+
+```{r}
+data(penguins, package = "palmerpenguins")
+
+peng <- na.omit(penguins)
+```
+
+
+```{r}
+peng %>% 
+  ggplot(aes(sex, body_mass_g)) +
+  stat_summary(
+    fun.data = ~mean_se(.x, mult = 1.96),
+    geom = "errorbar"
+  )
+```
+
+
+#### A color coded bar plot of median
+
+Here we want to color a bar of medians if median for a specific bar is less than a threshold (say 40).
+
+```{r}
+
+# custom function for fun.data
+
+calc_median_and_color <- function(x, threshold = 40) {
+  tibble(y = median(x)) %>% 
+    mutate(
+      fill = if_else(y < threshold, "pink",  "gray35")
+    )
+}
+
+peng %>% 
+  ggplot(aes(species, bill_length_mm)) +
+  stat_summary(
+    fun.data = calc_median_and_color,
+    geom = "bar"
+  )
+
+```
+
+
+Here we have deliberately used the colname `fill` so that it used as an argument of geom.
+
+
+#### pointrange plot with changing size
+
+```{r}
+peng %>% 
+  ggplot(aes(species, bill_length_mm)) +
+  stat_summary(
+    fun.data = \(x) {
+      scaled_size <- length(x) / nrow(peng)
+      mean_se(x) %>% mutate(size = scaled_size)
+    }
+  )
+```
+
+
