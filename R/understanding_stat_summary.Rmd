@@ -164,7 +164,29 @@ But if we want to show the mean lifeExp, we can do that.
 gapminder %>% 
   ggplot(aes(x = year, y = lifeExp)) +
   geom_bar(fun = "mean", stat = "summary")
+
 ```
 
 
 
+But in this approach, we can only draw bar plots. Heres where `stat_summary` comes into play. With `stat_summary` we can plot summary statistics with many different geoms.
+
+```{r}
+gapminder %>% 
+  ggplot(aes(year, lifeExp)) +
+  stat_summary(fun = "mean", geom = "point") +
+  stat_summary(fun = "mean", geom = "line")
+```
+
+
+If we want to see median lifeExps,
+
+```{r}
+gapminder %>% 
+  ggplot(aes(year, lifeExp)) +
+  stat_summary(fun = "median", geom = "area", fill = "dodgerblue", alpha = 0.3) +
+  stat_summary(fun = median, geom = "point", color = "firebrick")
+```
+
+
+Now if we want to plot point estimate with maximum minimum lifeExp
