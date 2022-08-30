@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE, error = TRUE)
 
 
 > **DISCLAIMER:** This note is based on (mostly copy pasted from) these sources
-> [1] [demystifying-stat-layers-ggplot2](https://yjunechoe.github.io/posts/2020-09-26-demystifying-stat-layers-ggplot2/)
+> [1] [demystifying-stat-layers-ggplot2](https://yjunechoe.github.io/posts/2020-09-26-demystifying-stat-layers-ggplot2/) [2] [Summary statistics from ggplot2tor](https://ggplot2tor.com/tutorials/summary_statistics)
 
 ## Demystifying stat_ layers in {ggplot2}
 
@@ -31,7 +31,7 @@ knitr::opts_chunk$set(echo = TRUE, error = TRUE)
 - **`stat_summary` summarizes one dimension of the data.**
 
 
-```{r warning=FALSE, message=FALSE}
+```{r understanding-stat-summary-1, warning=FALSE, message=FALSE}
 library(dplyr)
 library(ggplot2)
 library(tibble)
@@ -39,7 +39,7 @@ library(tibble)
 
 
 
-```{r}
+```{r understanding-stat-summary-2}
 height_df <- tibble(group = "A",
                     height = rnorm(30, 170, 10))
 
@@ -55,13 +55,13 @@ To verify this, we can actually look into the transformed data by `mean_se` and 
 
 The `mean_se` function internally looks like,
 
-```{r}
+```{r understanding-stat-summary-3}
 mean_se
 
 mean_se(height_df$height)
 ```
 
-```{r}
+```{r understanding-stat-summary-4}
 point_range_plot <- height_df %>% 
   ggplot(aes(group, height)) + 
   stat_summary()
@@ -78,14 +78,14 @@ which is similar as above, so it is proved that `stat_summary` using `mean_se` a
 #### Error bar showing 95% confidence Interval
 
 
-```{r}
+```{r understanding-stat-summary-5}
 data(penguins, package = "palmerpenguins")
 
 peng <- na.omit(penguins)
 ```
 
 
-```{r}
+```{r understanding-stat-summary-6}
 peng %>% 
   ggplot(aes(sex, body_mass_g)) +
   stat_summary(
@@ -97,9 +97,9 @@ peng %>%
 
 #### A color coded bar plot of median
 
-Here we want to color a bar of medians if median for a specific bar is less than a threshold (say 40).
+Here we want to color a bar if median for a specific bar is less than a threshold (say 40).
 
-```{r}
+```{r understanding-stat-summary-7}
 
 # custom function for fun.data
 
@@ -120,12 +120,12 @@ peng %>%
 ```
 
 
-Here we have deliberately used the colname `fill` so that it used as an argument of geom.
+Here we have deliberately used the colname `fill` so that it can be used as an argument of geom.
 
 
 #### pointrange plot with changing size
 
-```{r}
+```{r understanding-stat-summary-8}
 peng %>% 
   ggplot(aes(species, bill_length_mm)) +
   stat_summary(
@@ -135,5 +135,36 @@ peng %>%
     }
   )
 ```
+
+
+
+## Summary Statistic in Ggplot2 (tutorial from GGplot2tor)
+
+
+```{r understanding-stat-summary-9, message=FALSE}
+library(tidyverse)
+library(gapminder)
+
+head(gapminder)
+```
+
+
+```{r understanding-stat-summary-10}
+gapminder %>% 
+  ggplot(aes(x = year, y = lifeExp)) +
+  geom_col()
+```
+
+
+here bar chart does not show the mean or median of lifeExpectancy for all countries, instead shows the sum of lifeExp for each year.
+
+But if we want to show the mean lifeExp, we can do that.
+
+```{r understanding-stat-summary-11}
+gapminder %>% 
+  ggplot(aes(x = year, y = lifeExp)) +
+  geom_bar(fun = "mean", stat = "summary")
+```
+
 
 

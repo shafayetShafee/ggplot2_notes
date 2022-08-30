@@ -25,7 +25,7 @@ chic <- readr::read_csv("https://raw.githubusercontent.com/z3tt/ggplot-courses/m
 ```
 
 
-```{r}
+```{r ggplot2-from-Ced-1}
 
 knitr::kable(head(chic))  
 ```
@@ -37,7 +37,7 @@ knitr::kable(head(chic))
 
 `paste0` doesn't inside the `expression`. But `paste` works (sort of) and we have to give extra space inside the `paste` to separate the words. This happens both for `ggplot2` and `base-plot`. Asked a question about this behaviour in [SO](https://stackoverflow.com/questions/73045568/why-paste0-is-not-working-properly-inside-expression-in-either-ggplot2-or-ba).
 
-```{r}
+```{r ggplot2-from-Ced-2}
 g <- ggplot(chic, aes(date, temp))
 
 g + geom_point(color = "firebrick") +
@@ -48,7 +48,7 @@ g + geom_point(color = "firebrick") +
 
 ##### For ggplot2
 
-```{r}
+```{r ggplot2-from-Ced-3}
 library(ggplot2)
 
 ggplot(mtcars, aes(mpg, disp)) +
@@ -61,7 +61,7 @@ ggplot(mtcars, aes(mpg, disp)) +
 
 ##### For base-plot
 
-```{r}
+```{r ggplot2-from-Ced-4}
 plot(mtcars$disp ~ mtcars$mpg, 
      xlab = expression(paste0("mpg")^("paste0 is not working")),
      ylab = expression(paste("disp")^("paste is working"))
@@ -74,7 +74,7 @@ So the reason for happening such, because inside `expression` only some defined 
 
 which means when you use `vjust` in `axis.title.y = element_text()`, to move the y-axis title, it will move horizontally (from Our perspective), but this horizontal movement is vertical from the perspective of y-axis.
 
-```{r}
+```{r ggplot2-from-Ced-5}
 ggplot(chic, aes(x = date, y = temp)) +
   geom_point(color = "firebrick") +
   labs(x = "Year", y = "Temperature (°F)") +
@@ -87,7 +87,7 @@ ggplot(chic, aes(x = date, y = temp)) +
 
 That is, if we want to change the distance between y-axis title and y-axis, we need to increase the **right-margin** of `axis.title.y`, not the bottom the margin (unlike how `vjust` works)
 
-```{r}
+```{r ggplot2-from-Ced-6}
 ggplot(chic, aes(x = date, y = temp)) +
   geom_point(color = "firebrick") +
   labs(x = "Year", y = "Temperature (°F)") +
@@ -105,7 +105,7 @@ To get this distinction,
 
 #### `scale_y_continuous(limits = c(0, 50)) `or `ylim(c(0, 50))`
 
-```{r}
+```{r ggplot2-from-Ced-7}
 ggplot(chic, aes(factor(year), temp, group = year)) +
   geom_boxplot() +
   ylim(c(0, 50))
@@ -113,7 +113,7 @@ ggplot(chic, aes(factor(year), temp, group = year)) +
 
 #### `coord_cartesian(ylim = c(0, 50))`
 
-```{r}
+```{r ggplot2-from-Ced-8}
 ggplot(chic, aes(factor(year), temp, group = year)) +
   geom_boxplot() +
   coord_cartesian(ylim = c(0, 50))
@@ -122,7 +122,7 @@ ggplot(chic, aes(factor(year), temp, group = year)) +
 
 ## Forcing a plot to start at origin
 
-```{r}
+```{r ggplot2-from-Ced-9}
 chic_high <- dplyr::filter(chic, temp > 25, o3 > 20)
 
 p <- ggplot(chic_high, aes(temp, o3)) + 
@@ -133,13 +133,13 @@ p
 
 we need to use `expand_limits(x = 0, y = 0)` or `coord_cartesian(xlim = c(0, NA), ylim = c(0, NA))` to force plot start from `(0, 0)`
 
-```{r}
+```{r ggplot2-from-Ced-10}
 p + expand_limits(x = 0, y = 0)
 ```
 
 But if we look very carefully, we will see that there's some offset at left side of y axis at zero and at bottom side of x axis at zero. To force the plot starting exactly from zero, we can specify `expand = FALSE`, `clip = "off"` in `coord_*` function family.
 
-```{r}
+```{r ggplot2-from-Ced-11}
 p + expand_limits(x = 0, y = 0) + 
   coord_cartesian(expand = FALSE)
 ```
@@ -152,7 +152,7 @@ from the help of `coord_cartesian`
 
 So a useful use-case of `clip = "off"` is that, we can use it to draw outside the plot panel. An example from [`this twitter thread by Claus Wilke`](https://twitter.com/clauswilke/status/991542952802619392?lang=en)
 
-```{r}
+```{r ggplot2-from-Ced-12}
 
 mt_named <- data.frame(mtcars, name = row.names(mtcars))
 
@@ -178,20 +178,20 @@ p
 > expand	=> For position scales, a vector of range expansion constants used to add some padding around the data to ensure that they are placed some distance away from the axes. Use the convenience function expansion() to generate the values for the expand argument. The defaults are to expand the scale by 5% on each side for continuous variables, and by 0.6 units on each side for discrete variables.
 
 
-```{r warning=FALSE, message=FALSE}
+```{r ggplot2-from-Ced-13, warning=FALSE, message=FALSE}
 p + scale_y_discrete(name = NULL, breaks = NULL, expand = c(0, 5))
 ```
 
 Any way back to our topic of `clip`
 
-```{r}
+```{r ggplot2-from-Ced-14}
 p + 
   scale_y_discrete(name = NULL, breaks = NULL, expand = c(0, 1)) 
 ```
 
 We see that, top-left label Toyota Corolla is not showing, i.e. got cut by the plot panel, to allow that label to show, 
 
-```{r}
+```{r ggplot2-from-Ced-15}
 p + 
   scale_y_discrete(name = NULL, breaks = NULL, expand = c(0, 1)) +
   coord_cartesian(clip = "off") 
@@ -199,7 +199,7 @@ p +
 
 ## Coordinates with `ratio`
 
-```{r}
+```{r ggplot2-from-Ced-16}
 p <- ggplot(chic, aes(x = temp, y = temp + rnorm(nrow(chic), sd = 20))) +
   geom_point(color = "sienna") +
   labs(y = "random temp") +
@@ -213,23 +213,23 @@ Here we see that, per unit length of x axis is not same as that of y axis. NBut 
 
 > coord_fixed => A fixed scale coordinate system forces a specified ratio between the physical representation of data units on the axes. The ratio represents the number of units on the y-axis equivalent to one unit on the x-axis. The default, ratio = 1, ensures that one unit on the x-axis is the same length as one unit on the y-axis. Ratios higher than one make units on the y axis longer than units on the x-axis, and vice versa.
 
-```{r}
+```{r ggplot2-from-Ced-17}
 p + coord_fixed()
 ```
 
-```{r}
+```{r ggplot2-from-Ced-18}
 p + coord_fixed(ratio = 1.5)
 ```
 
 
-```{r}
+```{r ggplot2-from-Ced-19}
 p + coord_fixed(ratio = 1/4)
 ```
 
 
 ## Using function to alter labels
 
-```{r}
+```{r ggplot2-from-Ced-20}
 p <- ggplot(chic, aes(x = date, y = temp)) +
   geom_point(color = "firebrick") +
   labs(x = "Year", y = NULL)
@@ -240,7 +240,7 @@ p + scale_y_continuous(label = \(x) paste(x, "Degrees Farenheit"))
 Also we can pass the `{rlang}` lambda function notation.
 
 
-```{r}
+```{r ggplot2-from-Ced-21}
 p + scale_y_continuous(label = ~ paste(.x, "Degrees Farenheit"))
 ```
 
@@ -251,7 +251,7 @@ p + scale_y_continuous(label = ~ paste(.x, "Degrees Farenheit"))
 - `hjust` means horizontal adjustment and 0 for left align and 1 for right align
 - `vjust` means vertical adjustment and 0 for top aligned and 1 for bottom aligned.
 
-```{r}
+```{r ggplot2-from-Ced-22}
 
 p_demo <- function(vjust) {
   p + ylab("Temp") +
@@ -280,7 +280,7 @@ p_demo(2) + p_demo(3)
 
 ### working with `showtext`
 
-```{r}
+```{r ggplot2-from-Ced-23}
 library(showtext)
 
 font_add_google("Playfair Display", ## name of google font
@@ -302,7 +302,7 @@ ggplot(chic, aes(date, temp)) +
 
 And to implement fonts all over the plot that is, for all text element of the plot, we need to set the `base_family` equal to the google font
 
-```{r}
+```{r ggplot2-from-Ced-24}
 font_add_google("Roboto Condensed", "rob con")
 
 showtext_auto()
@@ -328,7 +328,7 @@ Three ways
 
 But there's a bit distinction between option 1 and option 2, 3. Option 1 will remove all of the legends in the plot at once, while option 2 or 3, will only remove the legend for a specific aesthetics (here for `color`)
 
-```{r}
+```{r ggplot2-from-Ced-25}
 ggplot(chic, 
        aes(date, temp, color = season, shape = season)) +
   geom_point()
@@ -360,7 +360,7 @@ Again there approach
 2. `scale_color_discrete(name = NULL)`
 3. `labs(color = NULL)`
 
-```{r}
+```{r ggplot2-from-Ced-26}
 p + theme(legend.title = element_blank())
 p + scale_color_discrete(name = NULL)
 p + labs(color = NULL)
@@ -377,7 +377,7 @@ There are three ways:
 - `guides(color = guide_legend("legend title name"))`
 
 
-```{r}
+```{r ggplot2-from-Ced-27}
 p1 <- p + labs(color = "Season")
 p2 <- p + scale_color_discrete(name = "Season")
 p3 <- p + guides(color = guide_legend("Season"))
@@ -391,7 +391,7 @@ p1 + p2 + p3
 Again, since there are two types of legend (`color` and `shape`) in the original plot `p` which were integrated into one legend by default, when changing one aesthetics (e.g. color legend), legend specifically, they get separated for each plots (`p1, p2, p3`). So to get integrated legends, we need change for color and `shape`.
 
 
-```{r}
+```{r ggplot2-from-Ced-28}
 p1 <- p + labs(color = "Season", shape = "Season")
 p2 <- p + scale_color_discrete(name = "Season") + 
   scale_shape_discrete(name = "Season")
@@ -407,7 +407,7 @@ p1 + p2 + p3
 
 An related topic which might be very useful know, which is how to get these three plot the same legend, since its more practical and reasonable thing to do. With `{patchwork}` its really easy to do.
 
-```{r}
+```{r ggplot2-from-Ced-29}
 p1 + p2 + p3 + plot_layout(guides = "collect")
 ```
 
@@ -416,7 +416,7 @@ p1 + p2 + p3 + plot_layout(guides = "collect")
 
 To place the legend inside the plot panel, we can specify a vector with relative x and y in between 0 and 1 (**0 -> left or bottom and 1 -> top or right**) to `legend.position`
 
-```{r}
+```{r ggplot2-from-Ced-30}
 p + labs(color = NULL, shape = NULL) + 
   theme(
     legend.position = c(0.15, 0.15),
@@ -427,7 +427,7 @@ p + labs(color = NULL, shape = NULL) +
 
 One thing to notice, here we had to `NULL` both title of color and shape in `labs`, since this is an integrated legend. Other wise, they will get separated and create a mess.
 
-```{r}
+```{r ggplot2-from-Ced-31}
 p + labs(color = NULL) + 
   theme(
     legend.position = c(0.15, 0.15),
@@ -437,7 +437,7 @@ p + labs(color = NULL) +
 
 ### Changing legend direction
 
-```{r}
+```{r ggplot2-from-Ced-32}
 p +
   theme(legend.position = "top") +
   guides(
@@ -456,7 +456,7 @@ p +
 
 We can do this by providing `labels` in the `scale_*` functions.
 
-```{r}
+```{r ggplot2-from-Ced-33}
 p +
   scale_color_discrete(
     name = "Season",
@@ -466,7 +466,7 @@ p +
 
 Again to get the integrated legends for `color` and `shape`,
 
-```{r}
+```{r ggplot2-from-Ced-34}
 legend_spec <- list(
   name = "Season",
   labels = c("Spring" = "Mar-May", 
@@ -484,7 +484,7 @@ p +
 
 And a more hard way to do this,
 
-```{r}
+```{r ggplot2-from-Ced-35}
 library(rlang)
 
 
@@ -504,7 +504,7 @@ I have stumbled over this thing, many times. Now its the time finally to get it 
 
 To do this, we need to use `override.aes` in `guide_legend` and specify what we want to overwrite
 
-```{r}
+```{r ggplot2-from-Ced-36}
 
 g <- guide_legend(override.aes = list(size = 4))
 
@@ -521,7 +521,7 @@ p +
 
 **Short answer:** use `show.legend = FALSE` for that specific geom in `geom_*`
 
-```{r}
+```{r ggplot2-from-Ced-37}
 ggplot(chic, aes(date, temp, color = season)) +
   geom_point() +
   geom_rug()
@@ -529,7 +529,7 @@ ggplot(chic, aes(date, temp, color = season)) +
 
 So we have a hybrid legend key now. So to get only the circle as legend key, we just need to shut off the legend for `geom_rug`
 
-```{r}
+```{r ggplot2-from-Ced-38}
 ggplot(chic, aes(date, temp, color = season)) +
   geom_point() +
   geom_rug(show.legend = FALSE)
@@ -541,7 +541,7 @@ ggplot won't add a legend automatically untill we map an aesthetics (e.g. `color
 
 The default plot is
 
-```{r}
+```{r ggplot2-from-Ced-39}
 ggplot(chic, aes(date, o3)) +
   geom_line(color = "gray") +
   geom_point(color = "darkorange2") +
@@ -550,7 +550,7 @@ ggplot(chic, aes(date, o3)) +
 
 To get a legend for lines and points,
 
-```{r}
+```{r ggplot2-from-Ced-40}
 ggplot(chic, aes(date, o3)) +
   geom_line(aes(color = "line")) +
   geom_point(aes(color = "point")) +
@@ -559,7 +559,7 @@ ggplot(chic, aes(date, o3)) +
 
 Now to map the color in legends properly and also to use line and point shaped marker in legends,
 
-```{r}
+```{r ggplot2-from-Ced-41}
 ggplot(chic, aes(date, o3)) +
   geom_line(aes(color = "line")) +
   geom_point(aes(color = "point")) +
@@ -585,7 +585,7 @@ A function used to create a guide or its name. See guides() for more information
 
 Simply change the order to the call to `geom_line` and `geom_point` and also the order of the values.
 
-```{r}
+```{r ggplot2-from-Ced-42}
 ggplot(chic, aes(date, temp)) +
   geom_line(aes(color = "line")) +
   geom_point(aes(color = "point")) +
@@ -607,7 +607,7 @@ ggplot(chic, aes(date, temp)) +
 
 #### Option 1 (Easier)
 
-```{r}
+```{r ggplot2-from-Ced-43}
 ggplot(chic, aes(date, temp, color = season)) +
   geom_point() +
   scale_x_date(date_labels = "%b-%y")
@@ -616,7 +616,7 @@ ggplot(chic, aes(date, temp, color = season)) +
 To change the legend order in something like (Summer => Autumn => Winter => Spring), we can use `scale_color_discrete` (since we have used `color = season`)
 
 
-```{r}
+```{r ggplot2-from-Ced-44}
 ggplot(chic, aes(date, temp, color = season)) +
   geom_point() +
   scale_color_discrete(
@@ -627,7 +627,7 @@ ggplot(chic, aes(date, temp, color = season)) +
 
 Or to align with the order of the plot, (Winter, Spring, Summer, Autumn) and also add custom legend key label,
 
-```{r}
+```{r ggplot2-from-Ced-45}
 ggplot(chic, aes(date, temp, color = season)) +
   geom_point() +
   scale_color_discrete(
@@ -641,7 +641,7 @@ ggplot(chic, aes(date, temp, color = season)) +
 
 or without the `=` mapping in `labels` (Here we have to make sure the order in both `breaks` and `labels` are aligned).
 
-```{r}
+```{r ggplot2-from-Ced-46}
 ggplot(chic, aes(date, temp, color = season)) +
   geom_point() +
   scale_color_discrete(
@@ -652,7 +652,7 @@ ggplot(chic, aes(date, temp, color = season)) +
 
 But to add custom color, we need to use `scale_color_manual`,
 
-```{r}
+```{r ggplot2-from-Ced-47}
 ggplot(chic, aes(date, temp, color = season)) +
   geom_point() +
   scale_color_manual(
@@ -664,7 +664,7 @@ ggplot(chic, aes(date, temp, color = season)) +
 
 #### Option 2
 
-```{r}
+```{r ggplot2-from-Ced-48}
 library(dplyr, quietly = TRUE)
 
 p <- chic %>% 
@@ -679,7 +679,7 @@ p
 
 Note that, color encoding got changed here. To add custom color, legend key labels in this case,
 
-```{r}
+```{r ggplot2-from-Ced-49}
 p +
   scale_color_manual(
     labels = c("Dec-Feb", "Mar-May", "Jun-Aug", "Sep-Nov"),
@@ -693,7 +693,7 @@ p +
 - `guide_legend` is used for categorical variable
 - `guide_colorbar` is used for continuous variable
 
-```{r}
+```{r ggplot2-from-Ced-50}
 p <- ggplot(chic, aes(date, temp, color = temp)) +
   geom_point()
 
@@ -703,15 +703,15 @@ p
 But we can also force to use the different guides other than the default ones.
 
 
-```{r}
+```{r ggplot2-from-Ced-51}
 p + guides(color = guide_legend())
 ```
 
-```{r}
+```{r ggplot2-from-Ced-52}
 p + guides(color = guide_bins())
 ```
 
-```{r}
+```{r ggplot2-from-Ced-53}
 p + guides(color = guide_colorsteps())
 ```
 
@@ -725,7 +725,7 @@ First, we need to take note on the fact that, there are section/component of the
 
 ### `panel.border` is on top of `panel.background` layer.
 
-```{r}
+```{r ggplot2-from-Ced-54}
 ggplot(chic, aes(x = date, y = temp)) +
   geom_point(size = 2) +
   labs(x = "Year", y = "Temperature (°F)") +
@@ -737,7 +737,7 @@ ggplot(chic, aes(x = date, y = temp)) +
 We can see that, the outlines of the panel did not changed, it remained as is. Because there's an another layer on top of `panel.background`, which is `panel.border`.
 
 
-```{r}
+```{r ggplot2-from-Ced-55}
 ggplot(chic, aes(x = date, y = temp)) +
   geom_point(size = 2) +
   labs(x = "Year", y = "Temperature (°F)") +
@@ -752,7 +752,7 @@ Now its clear that `panel.border` is on top of the whole **panel**, since its ob
 
 That's why we have to make sure that we give `transparent` fill in `element_rect` of `panel.border`.
 
-```{r}
+```{r ggplot2-from-Ced-56}
 ggplot(chic, aes(x = date, y = temp)) +
   geom_point(size = 2) +
   labs(x = "Year", y = "Temperature (°F)") +
@@ -767,7 +767,7 @@ ggplot(chic, aes(x = date, y = temp)) +
 
 ### Changing `minor_breaks` of the plot
 
-```{r}
+```{r ggplot2-from-Ced-57}
 ggplot(chic, aes(x = date, y = temp)) +
   geom_point(color = "firebrick") +
   scale_y_continuous(
@@ -796,7 +796,7 @@ has same effect on the margin.
 ### Difference in Behavior of the scales argument in `facet_grid` and `facet_wrap`
 
 
-```{r}
+```{r ggplot2-from-Ced-58}
 p <- ggplot(chic, aes(date, temp)) +
   geom_point(color = "chartreuse4", alpha = 0.3) +
   theme_bw() +
@@ -806,14 +806,14 @@ p <- ggplot(chic, aes(date, temp)) +
 ```
 
 
-```{r}
+```{r ggplot2-from-Ced-59}
 p + facet_grid(year ~ season, scales = "free")
 ```
 
 **By lookin at above plot, we can see that for a specific row/column, only either x -axis or y-axis is free but not both.**
 
 
-```{r fig.height=6, fig.width=8}
+```{r ggplot2-from-Ced-60, fig.height=6, fig.width=8}
 p + facet_wrap(year ~ season, nrow = 4, scales = "free")
 ```
 
@@ -825,7 +825,7 @@ p + facet_wrap(year ~ season, nrow = 4, scales = "free")
 We can highlight specific labels of the facet strip by creating a function that is
 based on `{ggtext}` (credit goes to Claus Wilke, author of `ggtext` and Cedric, author of the tutorial which I am following now)
 
-```{r}
+```{r ggplot2-from-Ced-61}
 library(ggtext)
 library(rlang)
 
@@ -859,7 +859,7 @@ element_grob.element_textbox_highlight <- function(element, label = "", ...) {
 Well, I don't have a good understanding of OOP in R, not yet. But so far, what I understand from the above code is that, we are first creating the function (constructor) for creating objects of class `element_textbox_highlight`, which also inherits from classes ` "element_textbox", "element_text", "element"` and then we define a `element_grob` method for this `element_textbox_highlight` object.
 
 
-```{r fig.height=6, fig.width=8}
+```{r ggplot2-from-Ced-62, fig.height=6, fig.width=8}
 p + facet_wrap(year ~ season, nrow = 4, scales = "free_x") +
   theme(
     strip.background = element_blank(),
@@ -876,7 +876,7 @@ p + facet_wrap(year ~ season, nrow = 4, scales = "free_x") +
 
 ### Styling a specific facet
 
-```{r}
+```{r ggplot2-from-Ced-63}
 ggplot(chic, aes(date, temp)) +
   geom_point(aes(color = season == "Summer"), alpha = 0.3,
              show.legend = FALSE) +
@@ -901,7 +901,7 @@ ggplot(chic, aes(date, temp)) +
 
 Adding exmaples like the ones above from [SO](https://stackoverflow.com/questions/60332202/conditionally-fill-ggtext-text-boxes-in-facet-wrap) (Actually this whole amazing specific facet modification idea and code originated from this StackOverflow QA)
 
-```{r}
+```{r ggplot2-from-Ced-64}
 library(cowplot)
 
 ggplot(mpg, aes(cty, hwy)) + 
@@ -926,7 +926,7 @@ ggplot(mpg, aes(cty, hwy)) +
 
 And for expanding this idea to two or more differnt type of styling,
 
-```{r}
+```{r ggplot2-from-Ced-65}
 library(ggplot2)
 library(cowplot)
 library(rlang)
@@ -1018,7 +1018,7 @@ The very first thing, we need to remember is this
 
 A quick example would be,
 
-```{r}
+```{r ggplot2-from-Ced-66}
 ggplot(chic) +
   aes(
     date, temp
@@ -1035,7 +1035,7 @@ In `scale_*_manual` (* can be color/colour/fill) the number of colors specified 
 By Qualitative variables nominal, ordinal or binary variables are meant.
 
 
-```{r}
+```{r ggplot2-from-Ced-67}
 p <- ggplot(chic, aes(x = date, y = temp, color = season)) +
   geom_point() +
   labs(x = "Year", y = "Temperature (°F)", color = NULL)
@@ -1059,7 +1059,7 @@ The following palettes are available for use with these scales:
 And these palettes look like,
 
 
-```{r fig.height=8}
+```{r ggplot2-from-Ced-68, fig.height=8}
 RColorBrewer::display.brewer.all()
 ```
 
@@ -1068,7 +1068,7 @@ RColorBrewer::display.brewer.all()
 
 #### `{ggthemes}`
 
-```{r}
+```{r ggplot2-from-Ced-69}
 library(ggthemes)
 
 p + scale_color_tableau()
@@ -1077,7 +1077,7 @@ p + scale_color_tableau()
 
 #### `{ggsci}`
 
-```{r}
+```{r ggplot2-from-Ced-70}
 library(ggsci)
 library(patchwork)
 
@@ -1104,7 +1104,7 @@ Now color palettes for continuous vars could be sequential or diverging
 - scale_*_gradient2() => for diverging 
 
 
-```{r}
+```{r ggplot2-from-Ced-71}
 gb <- ggplot(chic, aes(date, temp, color = temp)) +
   geom_point()
 
@@ -1114,13 +1114,13 @@ gb + scale_color_continuous()
 
 or similarly,
 
-```{r}
+```{r ggplot2-from-Ced-72}
 gb + scale_color_gradient()
 ```
 
 and using for diverging color scheme,
 
-```{r}
+```{r ggplot2-from-Ced-73}
 mid <- mean(chic$temp)
 
 gb + scale_color_gradient2(midpoint = mid)
@@ -1132,7 +1132,7 @@ using `midpoint` to specify where the color diverge should happen.
 
 ### Manually setting color for sequential color schemes
 
-```{r}
+```{r ggplot2-from-Ced-74}
 gb + scale_color_gradient(
   low = "darkkhaki", high = "darkgreen"
 )
@@ -1141,7 +1141,7 @@ gb + scale_color_gradient(
 
 ### Manually setting colors for diverging color schemes
 
-```{r}
+```{r ggplot2-from-Ced-75}
 gb + scale_color_gradient2(
   midpoint = mid, low = "#dd8a0b", high = "#32a676"
 )
@@ -1152,7 +1152,7 @@ gb + scale_color_gradient2(
 
 #### `{rcartocolor}`
 
-```{r}
+```{r ggplot2-from-Ced-76}
 library(rcartocolor)
 library(patchwork)
 
@@ -1165,7 +1165,7 @@ g2 <- gb + scale_color_carto_c(palette = "Earth")
 
 #### `{scico}`
 
-```{r}
+```{r ggplot2-from-Ced-77}
 library(scico)
 
 g1 <- gb + scale_color_scico(palette = "berlin")
@@ -1190,7 +1190,7 @@ As per the documentation of `ggplot2` on `control aesthetic evaluation`
 An example of mapping from scaled data could be to use a desaturated version of the stroke colour for fill.
 
 
-```{r}
+```{r ggplot2-from-Ced-78}
 ggplot(chic, aes(date, temp)) +
   geom_boxplot(aes(
     color = season,
@@ -1204,7 +1204,7 @@ ggplot(chic, aes(date, temp)) +
 In this regard `colorspace::desaturate`, `colorspace::lighten`, `colorspace::darken` functions and `ggdark::invert_color()` are very useful.
 
 
-```{r}
+```{r ggplot2-from-Ced-79}
 library(colorspace)
 
 ggplot(chic, aes(date, temp)) +
@@ -1217,7 +1217,7 @@ ggplot(chic, aes(date, temp)) +
 
 
 
-```{r}
+```{r ggplot2-from-Ced-80}
 library(ggdark)
 
 ggplot(chic, aes(date, temp, color = temp)) +
@@ -1230,7 +1230,7 @@ ggplot(chic, aes(date, temp, color = temp)) +
 
 Or using `stage` instead of `after_scale`
 
-```{r}
+```{r ggplot2-from-Ced-81}
 ggplot(chic, aes(date, temp, color = temp)) +
   geom_point(size = 5) +
   # add a layer of point on this with inverted color
@@ -1245,7 +1245,7 @@ ggplot(chic, aes(date, temp, color = temp)) +
 
 #### `{ggthemes}` => `theme_economist()`
 
-```{r}
+```{r ggplot2-from-Ced-82}
 library(ggthemes)
 
 ggplot(chic, aes(x = date, y = temp, color = season)) +
@@ -1260,7 +1260,7 @@ ggplot(chic, aes(x = date, y = temp, color = season)) +
 #### `{ggthemes}` => `theme_tufte()`
 
 
-```{r}
+```{r ggplot2-from-Ced-83}
 chic_2000 <- dplyr::filter(chic, year == 2000)
 
 ggplot(chic_2000, aes(temp, o3)) +
@@ -1274,7 +1274,7 @@ ggplot(chic_2000, aes(temp, o3)) +
 To learn more example about tufte style plotting with R, [see this](tufte_in_R.md)
 
 
-```{r}
+```{r ggplot2-from-Ced-84}
 library(hrbrthemes)
 
 ggplot(chic, aes(x = temp, y = o3)) +
@@ -1289,7 +1289,7 @@ ggplot(chic, aes(x = temp, y = o3)) +
 To change the font-family of all text elements of plot easily and directly, we can use `base_family` argument of the `theme_*` functions
 
 
-```{r}
+```{r ggplot2-from-Ced-85}
 sysfonts::font_add_google("Playfair Display", ## name of google font
                 "playfair") ## name that will be used in R
 
@@ -1308,7 +1308,7 @@ g + theme_bw(base_family = "playfair")
 
 we can do this using `base_size` argument.
 
-```{r}
+```{r ggplot2-from-Ced-86}
 
 sysfonts::font_add_google("Roboto Condensed", "Roboto Condensed")
 
@@ -1319,7 +1319,7 @@ g + theme_bw(base_size = 20, base_family = "Roboto Condensed")
 ### Change the size of all line and Rect Elements
 
 
-```{r}
+```{r ggplot2-from-Ced-87}
 g + theme_bw(base_line_size = 1, base_rect_size = 1)
 ```
 

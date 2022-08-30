@@ -21,7 +21,7 @@ This is compilation of many resources about color-palettes for data viz in R.
 
 ### Color palettes in Base-R
 
-```{r fig.height=8}
+```{r color-palettes-1, fig.height=8}
 RColorBrewer::display.brewer.all()
 ```
 
