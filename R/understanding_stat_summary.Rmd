@@ -171,7 +171,7 @@ gapminder %>%
 
 But in this approach, we can only draw bar plots. Heres where `stat_summary` comes into play. With `stat_summary` we can plot summary statistics with many different geoms.
 
-```{r}
+```{r understanding-stat-summary-1-bis}
 gapminder %>% 
   ggplot(aes(year, lifeExp)) +
   stat_summary(fun = "mean", geom = "point") +
@@ -181,7 +181,7 @@ gapminder %>%
 
 If we want to see median lifeExps,
 
-```{r}
+```{r understanding-stat-summary-2-bis}
 gapminder %>% 
   ggplot(aes(year, lifeExp)) +
   stat_summary(fun = "median", geom = "area", fill = "dodgerblue", alpha = 0.3) +
@@ -189,4 +189,185 @@ gapminder %>%
 ```
 
 
-Now if we want to plot point estimate with maximum minimum lifeExp
+Now if we want to plot point estimate with maximum minimum of lifeExp,
+
+
+```{r understanding-stat-summary-3-bis}
+gapminder %>% 
+  ggplot(aes(year, lifeExp)) +
+  stat_summary(
+    fun = mean,
+    fun.min = min,
+    fun.max = max,
+    geom = "pointrange"
+  )
+
+
+# or using fun.data
+
+gapminder %>% 
+  ggplot(aes(year, lifeExp)) +
+  stat_summary(
+    fun.data = \(x) {
+      data.frame(y = mean(x), ymax = max(x), ymin = min(x))
+    }
+  )
+```
+
+we also can show error bar,
+
+
+```{r understanding-stat-summary-4-bis}
+gapminder %>% 
+  ggplot(aes(year, lifeExp)) +
+  stat_summary(
+    geom = "errorbar",
+    width = 1,
+    fun.min = min,
+    fun.max = max
+  )
+```
+
+```{r understanding-stat-summary-5-bis}
+g <- gapminder %>% 
+  ggplot(aes(year, lifeExp))
+
+# 95% normal CI
+g + stat_summary(
+  fun.data = mean_cl_normal,
+  geom = "errorbar",
+  width = 1
+) +
+stat_summary(
+  fun = mean,
+  geom = "point"
+)
+
+
+# 99% normal CI
+g + stat_summary(
+  fun.data = ~ mean_cl_normal(.x, conf.int = 0.99),
+  geom = "errorbar",
+  width = 1
+) +
+stat_summary(
+  fun = mean,
+  geom = "point"
+)
+    
+```
+
+
+```{r understanding-stat-summary-6-bis}
+median_IQR <- \(x) {
+  list(
+    y = median(x),
+    ymin = quantile(x)[2],
+    ymax = quantile(x)[4]
+  )
+}
+
+range <- \(x) {
+  list(ymin = min(x), ymax = max(x))
+}
+```
+
+
+```{r understanding-stat-summary-7-bis}
+g + 
+  stat_summary(
+    geom = "linerange",
+    fun.data = median_IQR,
+    size = 3,
+    alpha = 0.3
+  ) +
+  stat_summary(
+    geom = "linerange",
+    fun.data = range,
+    size = 3,
+    alpha = 0.3
+  ) +
+  stat_summary(
+    geom = "point",
+    fun = "mean",
+    shape = "X",
+    size = 3
+  )
+```
+
+
+
+```{r understanding-stat-summary-8-bis}
+gapminder %>% 
+  mutate(
+    year = as.factor(year)
+  ) %>% 
+  ggplot(aes(continent, lifeExp, fill = year)) +
+  stat_summary(
+    geom = "bar",
+    fun = "mean",
+    position = position_dodge(0.95)
+  ) +
+  stat_summary(
+    geom = "errorbar",
+    fun.data = ~mean_cl_normal(.x, conf.int = 0.99),
+    position = position_dodge(0.95),
+    width = 0.5
+  ) +
+  stat_summary(
+    geom = "point",
+    fun = "mean",
+    size = 1,
+    position = position_dodge(0.95),
+    show.legend = FALSE
+  ) +
+  scale_fill_viridis_d() +
+  guides(
+    fill = guide_legend(
+      title = NULL,
+      nrow = 2, byrow = TRUE, 
+      keywidth = unit(20, "pt"),
+      keyheight = unit(3, "pt")
+    )
+  ) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+
+```{r understanding-stat-summary-9-bis}
+stat_fun <- \(x, fill = NULL, alpha = NULL, size = NULL) {
+      list(
+        y = mean(x), ymax = max(x), ymin = min(x),
+        alpha = alpha, fill = fill, size = size
+      )
+}
+
+gapminder %>% 
+  ggplot(aes(year, lifeExp)) +
+  stat_summary(
+    geom = "ribbon",
+    # fun.data = ~stat_fun(.x, fill = "firebrick", alpha = 0.3)
+    fun.data = ~stat_fun(.x),
+    fill = "firebrick",
+    alpha = 0.3
+  ) +
+  stat_summary(
+    geom = "pointrange",
+    fun.data = ~stat_fun(.x),
+    size = 0.4
+  ) +
+  stat_summary(
+    geom = "line",
+    fun = min,
+    color = "firebrick"
+  ) +
+  stat_summary(
+    geom = "line",
+    fun = max,
+    color = "firebrick"
+  ) +
+  facet_wrap(~continent)
+```
+
